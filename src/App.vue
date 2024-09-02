@@ -4,7 +4,10 @@
   </div>
 </template>
 <script lang="ts" setup name="App">
-const str = '我爱你祖国'
+for (leti=0;i<100;i++)
+{
+  console.log(i);
+}
 </script>
 <style scoped>
 .box {
