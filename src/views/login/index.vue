@@ -3,13 +3,13 @@
     <el-row>
       <el-col :span="12" :xs="0"></el-col>
       <el-col :span="12" :xs="24">
-        <el-form class="login_form">
+        <el-form class="login_form" ref="userFormRef" :model="loginForm" :rules="rules">
           <h1>Hello</h1>
           <h2>欢迎来到硅谷甄选</h2>
-          <el-form-item>
-            <el-input :prefix-icon="User" v-model="loginForm.username"></el-input>
+          <el-form-item prop="username">
+            <el-input :prefix-icon="User" v-model="loginForm.username" />
           </el-form-item>
-          <el-form-item>
+          <el-form-item prop="password">
             <el-input
               type="password"
               :prefix-icon="Lock"
@@ -38,7 +38,7 @@
 import { User, Lock } from '@element-plus/icons-vue'
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElNotification } from 'element-plus'
+import { ElNotification, type FormInstance, type FormRules } from 'element-plus'
 // 引入获取当前时间的函数
 import { getTime } from '@/utils/time'
 // 引入用户相关小仓库
@@ -49,14 +49,42 @@ let userStore = useUserStore()
 // 获取路由器
 let $router = useRouter()
 
+// 获取el-form组件
+const userFormRef = ref<FormInstance>()
+
 // 收集账号与密码数据
-let loginForm = reactive({ username: 'admin', password: '111111' })
+interface LoginForm {
+  username: string
+  password: string
+}
+const loginForm = reactive<LoginForm>({ username: 'admin', password: '111111' })
 
 // 定义变量控制按钮加载效果
 let loading = ref(false)
 
+// 表单表单字段校验规则
+const rules = reactive<FormRules<LoginForm>>({
+  // 规则对象属性：
+  // required：代表这个四段是必须要填的
+  // min: 文本长度至少多少位
+  // max: 文本长度最多多少位
+  // message：错误的提示信息
+  // trigger：触发校验表单的是时机，change：文本发生变化时，blur：输入框失去焦点时
+  username: [
+    { required: true, message: '用户名必填' },
+    { min: 5, max: 10, message: '用户名长度需要在 5 到 10 之间', trigger: 'change' },
+  ],
+  password: [
+    { required: true, message: '密码必填' },
+    { min: 5, max: 15, message: '密码长度需要在 5 到 15 之间', trigger: 'change' },
+  ],
+})
+
 // 登录按钮回调
 const login = async () => {
+  // 保证表单校验通过再发送请求
+  await userFormRef.value?.validate()
+
   // 加载效果：开始加载
   loading.value = true
   // 点击登录按钮以后干什么？
