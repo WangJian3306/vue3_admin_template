@@ -1,21 +1,11 @@
 <template>
   <div>
-    <h1>App根组件</h1>
-    <h1>新增一个标题</h1>
+    <h1>SVG测试</h1>
+    <!-- 测试 SVG 图标使用 -->
+    <SvgIcon name="phone" color="green" width="100px" height="100px"></SvgIcon>
+    <Pagination name="home" color="green" width="100px" height="100px"></Pagination>
   </div>
 </template>
 <script lang="ts" setup name="App">
-for (let i = 0; i < 100; i++) {
-  console.log(i)
-}
 </script>
-<style scoped>
-.box {
-  width: 600px;
-  height: 400px;
-  background: black;
-  h1 {
-    color: white;
-  }
-}
-</style>
+<style scoped></style>
