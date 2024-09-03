@@ -17,6 +17,9 @@ import '@/styles/index.scss'
 // 引入路由
 import router from './router'
 
+// 引入参考
+import pinia from './store'
+
 const app = createApp(App)
 app.use(ElementPlus, {
   locale: zhCn, // elemnet-plus 国际化语言配置
@@ -25,5 +28,6 @@ app.use(ElementPlus, {
 app.use(globalComponent)
 // 注册模版路由
 app.use(router)
-
+// 安装pinia
+app.use(pinia)
 app.mount('#app')
