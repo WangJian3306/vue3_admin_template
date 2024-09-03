@@ -1,24 +1,15 @@
 <template>
   <div>
-    <h1>测试axios二次封装</h1>
+    <h1>App根组件</h1>
   </div>
 </template>
 <script lang="ts" setup name="App">
-import request from '@/utils/request'
 import { onMounted } from 'vue'
-
-// 当组件挂载完毕，发送请求
+import { reqLogin } from './api/user'
 onMounted(() => {
-  request({
-    url: '/user/login',
-    method: 'post',
-    data: {
-      username: 'admin',
-      password: '111111',
-    },
-  }).then((res) => {
-    console.log(res)
+  reqLogin({ username: 'admin', password: '111111' }).then((value) => {
+    console.log(value)
   })
 })
 </script>
-<style scoped lang="scss"></style>
+<style scoped></style>
