@@ -62,6 +62,30 @@ const loginForm = reactive<LoginForm>({ username: 'admin', password: '111111' })
 // 定义变量控制按钮加载效果
 let loading = ref(false)
 
+// 自定义校验规则
+const validatorUsername = (rule: any, value: any, callback: any) => {
+  // rule:即为校验规则对象
+  // value:即为表单元素的文本内容
+  // 函数：如果符合条件 callBack 放行通过即可
+  // 如果不符合条件，调用 callBack 方法，注入错误的提示信息
+  if (value.length >= 5) {
+    callback()
+  } else {
+    callback(new Error('账号长度至少 5 位'))
+  }
+}
+const validatorPassword = (rule: any, value: any, callback: any) => {
+  // rule:即为校验规则对象
+  // value:即为表单元素的文本内容
+  // 函数：如果符合条件 callBack 放行通过即可
+  // 如果不符合条件，调用 callBack 方法，注入错误的提示信息
+  if (value.length >= 6) {
+    callback()
+  } else {
+    callback(new Error('密码长度至少 6 位'))
+  }
+}
+
 // 表单表单字段校验规则
 const rules = reactive<FormRules<LoginForm>>({
   // 规则对象属性：
@@ -72,11 +96,13 @@ const rules = reactive<FormRules<LoginForm>>({
   // trigger：触发校验表单的是时机，change：文本发生变化时，blur：输入框失去焦点时
   username: [
     { required: true, message: '用户名必填' },
-    { min: 5, max: 10, message: '用户名长度需要在 5 到 10 之间', trigger: 'change' },
+    // { min: 5, max: 10, message: '用户名长度需要在 5 到 10 之间', trigger: 'change' },
+    { trigger: 'change', validator: validatorUsername },
   ],
   password: [
     { required: true, message: '密码必填' },
-    { min: 5, max: 15, message: '密码长度需要在 5 到 15 之间', trigger: 'change' },
+    // { min: 5, max: 15, message: '密码长度需要在 5 到 15 之间', trigger: 'change' },
+    { trigger: 'change', validator: validatorPassword },
   ],
 })
 
