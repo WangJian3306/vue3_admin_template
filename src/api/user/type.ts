@@ -5,11 +5,12 @@ export interface loginForm {
 }
 
 interface dataType {
-  token: string
+  token?: string
+  message?: string
 }
 
 // 登录接口返回数据类型
-export interface loginResponse {
+export interface loginResponseData {
   code: number
   data: dataType
 }
@@ -29,7 +30,7 @@ interface userInfo {
 interface user {
   checkUser: userInfo
 }
-export interface userInfoRespons {
+export interface userInfoResponsData {
   code: number
   data: user
 }
