@@ -30,7 +30,7 @@ request.interceptors.response.use(
     // 定义变量存储网络错误信息
     let message = ''
     // http状态码
-    let status = error.response.status
+    const status = error.response.status
     switch (status) {
       case 401:
         message = 'Token 过期'

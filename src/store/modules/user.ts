@@ -9,7 +9,7 @@ import type { UserState } from './type/type'
 import { SET_TOKEN, GET_TOKEN } from '@/utils/token'
 
 // 创建用户笑常开
-let useUserStore = defineStore('User', {
+const useUserStore = defineStore('User', {
   // 小仓库存储数据的地方
   state: (): UserState => {
     return {
@@ -20,7 +20,7 @@ let useUserStore = defineStore('User', {
   actions: {
     async userLogin(data: loginForm) {
       // 登录请求
-      let result: loginResponseData = await reqLogin(data)
+      const result: loginResponseData = await reqLogin(data)
       // 登录请求：成功200->token
       if (result.code == 200) {
         // pinia 仓库存储一下token

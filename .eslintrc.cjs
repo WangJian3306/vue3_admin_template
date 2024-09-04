@@ -9,6 +9,7 @@ module.exports = {
     node: true,
     jest: true,
   },
+  parser: "vue-eslint-parser",
   extends: [
     'plugin:vue/vue3-essential',
     'eslint:recommended',
