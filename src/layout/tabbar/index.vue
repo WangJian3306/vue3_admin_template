@@ -1,10 +1,6 @@
 <template>
   <div class="tabbar">
     <div class="tabbar_left">
-      <!-- 顶部左侧静态 -->
-      <el-icon style="margin-right: 10px">
-        <Expand />
-      </el-icon>
       <!-- 左侧面包屑  -->
       <Breadcrumb></Breadcrumb>
     </div>
