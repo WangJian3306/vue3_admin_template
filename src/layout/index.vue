@@ -16,7 +16,7 @@
     <div class="layout_tabbar">456</div>
     <!-- 内容展示区域 -->
     <div class="layout_main">
-      <p style="height: 10000px; background: red">我是一个段落</p>
+      <Main></Main>
     </div>
   </div>
 </template>
@@ -25,11 +25,12 @@
 import Logo from '@/layout/logo/index.vue'
 // 引入菜单组件
 import Menu from '@/layout/menu/index.vue'
+// 引入右侧内容展示区
+import Main from '@/layout/main/index.vue'
 
 // 获取用户相关的小仓库
 import useUserStore from '@/store/modules/user'
 const userStore = useUserStore()
-console.log(userStore)
 </script>
 <style scoped lang="scss">
 .layout_container {

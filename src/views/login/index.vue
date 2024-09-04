@@ -121,7 +121,7 @@ const login = async () => {
     // 保证登录成功
     await userStore.userLogin(loginForm)
     // 编程式导航跳转到展示数据首页
-    $router.push('/')
+    $router.push('/home')
     // 登录成功提示信息
     ElNotification({
       type: 'success',
