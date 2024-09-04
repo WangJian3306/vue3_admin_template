@@ -2,6 +2,7 @@ import { fileURLToPath, URL } from 'node:url'
 
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import VueSetupExtend from 'vite-plugin-vue-setup-extend'
 
 // 引入 svg 需要用到的插件
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
@@ -22,6 +23,7 @@ export default defineConfig(({command}) => {
       viteMockServe({
         localEnabled: command === 'serve', // 保证开发阶阶段能够使用mock接口
       }),
+      VueSetupExtend(),
     ],
     resolve: {
       alias: {

@@ -6,7 +6,7 @@ import { constantRoute } from './routes'
 const router = createRouter({
   // 路由模式hash
   history: createWebHashHistory(),
-  routes: constantRoute,
+  routes: constantRoute as [],
   // 滚动行为
   scrollBehavior() {
     return {
