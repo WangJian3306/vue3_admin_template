@@ -17,9 +17,7 @@ export const constantRoute = [
     component: () => import('@/layout/index.vue'),
     name: 'layout',
     meta: {
-      title: 'layout',
       hidden: false, // 代表路由标题在菜单中是否隐藏 true：隐藏 false：不隐藏
-      icon: 'Avatar',
     },
     redirect: '/home',
     children: [
@@ -63,6 +61,7 @@ export const constantRoute = [
       hidden: false,
       icon: 'Lock',
     },
+    redirect: '/acl/user',
     children: [
       {
         path: '/acl/user',
@@ -105,6 +104,7 @@ export const constantRoute = [
       icon: 'Goods',
       hidden: false,
     },
+    redirect: '/product/trademark',
     children: [
       {
         path: '/product/trademark',
