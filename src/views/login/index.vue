@@ -37,7 +37,7 @@
 <script lang="ts" setup name="Home">
 import { User, Lock } from '@element-plus/icons-vue'
 import { reactive, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { ElNotification, type FormInstance, type FormRules } from 'element-plus'
 // 引入获取当前时间的函数
 import { getTime } from '@/utils/time'
@@ -48,6 +48,8 @@ let userStore = useUserStore()
 
 // 获取路由器
 let $router = useRouter()
+// 获取路由对象
+const $route = useRoute()
 
 // 获取el-form组件
 const userFormRef = ref<FormInstance>()
@@ -121,7 +123,9 @@ const login = async () => {
     // 保证登录成功
     await userStore.userLogin(loginForm)
     // 编程式导航跳转到展示数据首页
-    $router.push('/home')
+    // 判断登录的时候，路由路径当中是否有 query 参数，如果有就往query参数跳转，没有跳转到首页
+    let redirect: any = $route.query.redirect
+    $router.push({ path: redirect || '/' })
     // 登录成功提示信息
     ElNotification({
       type: 'success',
