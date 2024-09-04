@@ -20,6 +20,9 @@ importers:
       pinia:
         specifier: ^2.2.2
         version: 2.2.2(typescript@5.4.5)(vue@3.4.38(typescript@5.4.5))
+      project:
+        specifier: 'link:'
+        version: 'link:'
       vue:
         specifier: ^3.4.29
         version: 3.4.38(typescript@5.4.5)

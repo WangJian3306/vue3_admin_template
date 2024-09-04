@@ -26,6 +26,7 @@
     "axios": "^1.7.7",
     "element-plus": "^2.8.1",
     "pinia": "^2.2.2",
+    "project": "link:",
     "vue": "^3.4.29",
     "vue-router": "^4.4.3"
   },

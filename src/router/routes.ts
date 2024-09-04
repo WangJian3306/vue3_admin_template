@@ -8,6 +8,7 @@ export const constantRoute = [
     meta: {
       title: '登录', // 菜单标题
       hidden: true, // 代表路由标题在菜单中是否隐藏 true：隐藏 false：不隐藏
+      icon: 'Promotion', // 菜单文字左侧的图标，支持 element-plus 全部图标
     },
   },
   {
@@ -18,6 +19,7 @@ export const constantRoute = [
     meta: {
       title: 'layout',
       hidden: false, // 代表路由标题在菜单中是否隐藏 true：隐藏 false：不隐藏
+      icon: 'Avatar',
     },
     children: [
       {
@@ -25,15 +27,8 @@ export const constantRoute = [
         compentnt: () => import('@/views/home/index.vue'),
         meta: {
           title: '首页',
-          hidden: true,
-        },
-      },
-      {
-        path: '/ceshi',
-        compentnt: () => import('@/views/home/index.vue'),
-        meta: {
-          title: '测试',
           hidden: false,
+          icon: 'HomeFilled',
         },
       },
     ],
@@ -45,6 +40,7 @@ export const constantRoute = [
     meta: {
       title: '404',
       hidden: true,
+      icon: 'DocumentDelete',
     },
   },
   {
@@ -55,6 +51,7 @@ export const constantRoute = [
     meta: {
       title: '任意路由',
       hidden: true,
+      icon: 'DataLine',
     },
   },
 ]
