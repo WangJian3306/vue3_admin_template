@@ -20,6 +20,9 @@ import router from './router'
 // 引入参考
 import pinia from './store'
 
+// 引入路由鉴权
+import './permission'
+
 const app = createApp(App)
 app.use(ElementPlus, {
   locale: zhCn, // elemnet-plus 国际化语言配置
@@ -30,4 +33,5 @@ app.use(globalComponent)
 app.use(router)
 // 安装pinia
 app.use(pinia)
+
 app.mount('#app')
