@@ -2,7 +2,7 @@
 import { defineStore } from 'pinia'
 // 引入接口
 import { reqLogin, reqUserInfo, reqLogout } from '@/api/user'
-
+import type { loginFormData, loginResponseData, userInfoResponseData } from '@/api/user/type'
 import type { UserState } from './type/type'
 // 引入操作本地存储的工具文件
 import { SET_TOKEN, GET_TOKEN, REMOVE_TOKEN } from '@/utils/token'
@@ -23,9 +23,9 @@ const useUserStore = defineStore('User', {
   },
   // 异步｜逻辑的地方
   actions: {
-    async userLogin(data: any) {
+    async userLogin(data: loginFormData) {
       // 登录请求
-      const result: any = await reqLogin(data)
+      const result: loginResponseData = await reqLogin(data)
       // 登录请求：成功200->token
       if (result.code == 200) {
         // pinia 仓库存储一下token
@@ -42,7 +42,7 @@ const useUserStore = defineStore('User', {
     // 获取用户信息方法
     async userInfo() {
       // 获取用户信息存储仓库当中【用户头像，名字】
-      const result = await reqUserInfo()
+      const result: userInfoResponseData = await reqUserInfo()
       // 如果获取用户信息成功，存储一下用户信息
       if (result.code == 200) {
         this.username = result.data.name
@@ -54,7 +54,7 @@ const useUserStore = defineStore('User', {
     },
     // 退出登录
     async userLogout() {
-      const result = await reqLogout()
+      const result: any = await reqLogout()
       if (result.code == 200) {
         // 目前咩有 mock接口：退出登录接口（通知服务器本地用户唯一标识失效）
         this.token = ''
