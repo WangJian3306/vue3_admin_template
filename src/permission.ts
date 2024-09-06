@@ -47,7 +47,7 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
         } catch (error) {
           // token 过期：获取不到用户信息了
           // 退出登录->用户相关的数据清空
-          userStore.userLogout()
+          await userStore.userLogout()
           next({ path: '/login', query: { redirect: to.path } })
         }
       }
@@ -60,8 +60,6 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
       next({ path: '/login', query: { redirect: to.path } })
     }
   }
-
-  next()
 })
 
 // 全局后置守卫
