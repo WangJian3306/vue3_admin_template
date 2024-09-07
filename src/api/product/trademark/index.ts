@@ -18,10 +18,9 @@ export const reqHasTrademark = (page: number, limit: number) =>
   request.get<any, TradeMarkResponseData>(API.TRADEMARK_URL + `${page}/${limit}`)
 
 // 新增品牌接口方法
-export const addTradeMark = (data: Trademark) => {
-  request.post<any, TradeMarkResponseData>(API.ADDTRADEMARK_URL, data)
-}
+export const reqAddTrademark = (data: Trademark) =>
+  request.post<any, any>(API.ADDTRADEMARK_URL, data)
+
 // 更新品牌接口方法
-export const updateTradeMark = (data: Trademark) => {
-  request.post<any, TradeMarkResponseData>(API.UPDATETRADEMARK_URL, data)
-}
+export const reqUpdateTrademark = (data: Trademark) =>
+  request.post<any, any>(API.UPDATETRADEMARK_URL, data)
