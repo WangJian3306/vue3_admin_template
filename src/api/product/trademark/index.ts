@@ -17,10 +17,13 @@ enum API {
 export const reqHasTrademark = (page: number, limit: number) =>
   request.get<any, TradeMarkResponseData>(API.TRADEMARK_URL + `${page}/${limit}`)
 
-// 新增品牌接口方法
-export const reqAddTrademark = (data: Trademark) =>
-  request.post<any, any>(API.ADDTRADEMARK_URL, data)
-
-// 更新品牌接口方法
-export const reqUpdateTrademark = (data: Trademark) =>
-  request.post<any, any>(API.UPDATETRADEMARK_URL, data)
+// 新增与修改品牌接口方法
+export const reqAddOrUpdateTrademark = (data: Trademark) => {
+  // 修改已有品牌的数据
+  if (data.id) {
+    return request.put<any, any>(API.UPDATETRADEMARK_URL, data)
+  } else {
+    // 新增品牌
+    return request.post<any, any>(API.ADDTRADEMARK_URL, data)
+  }
+}

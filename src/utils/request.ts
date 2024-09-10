@@ -17,6 +17,7 @@ request.interceptors.request.use((config) => {
   const userStore = useUserStore()
   if (userStore.token) {
     config.headers.token = userStore.token
+    // config.headers['Authorization'] = 'Bearer ' + userStore.token
   }
 
   // config配置对象，headers属性请求头，给服务器端携带公共参数

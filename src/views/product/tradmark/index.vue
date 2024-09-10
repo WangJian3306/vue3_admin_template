@@ -28,8 +28,13 @@
           </template>
         </el-table-column>
         <el-table-column label="操作" align="center">
-          <template v-slot>
-            <el-button type="primary" size="small" icon="Edit" @click="updateTrademark"></el-button>
+          <template v-slot="{ row }">
+            <el-button
+              type="primary"
+              size="small"
+              icon="Edit"
+              @click="updateTrademark(row)"
+            ></el-button>
             <el-button type="primary" size="small" icon="Delete"></el-button>
           </template>
         </el-table-column>
@@ -61,7 +66,11 @@
     v-model: 控制对话框的显示与隐藏，ture 显示 false 隐藏
     title：设置对话框左上角标题
    -->
-    <el-dialog v-model="dialogFormVisible" title="添加品牌" width="500">
+    <el-dialog
+      v-model="dialogFormVisible"
+      :title="trademarkParams.id ? '修改品牌' : '添加品牌'"
+      width="500"
+    >
       <el-form style="width: 80%">
         <el-form-item label="品牌名称" label-width="80px">
           <el-input placeholder="请输入品牌名称" v-model="trademarkParams.tmName"></el-input>
@@ -93,7 +102,7 @@
 import { ref, onMounted, reactive } from 'vue'
 import type { ComponentSize, UploadProps } from 'element-plus'
 import { ElMessage } from 'element-plus'
-import { reqHasTrademark, reqAddTrademark } from '@/api/product/trademark'
+import { reqHasTrademark, reqAddOrUpdateTrademark } from '@/api/product/trademark'
 import type { Records, TradeMarkResponseData, Trademark } from '@/api/product/trademark/type'
 
 // 当前页码
@@ -149,12 +158,20 @@ const addTrademark = () => {
   // 清空数据
   trademarkParams.tmName = ''
   trademarkParams.logoUrl = ''
+  trademarkParams.id = 0
 }
 
 // 修改已有品牌的按钮的回调
-const updateTrademark = () => {
+const updateTrademark = (row: Trademark) => {
   // 对话框要显示
   dialogFormVisible.value = true
+
+  // 展示已有品牌的数据
+  // trademarkParams.id = row.id
+  // trademarkParams.tmName = row.tmName
+  // trademarkParams.logoUrl = row.logoUrl
+  // ES6 合并对象写法
+  Object.assign(trademarkParams, row)
 }
 
 // 对话框底部取消按钮
@@ -164,23 +181,24 @@ const cancel = () => {
 }
 // 对话框底部确定按钮
 const confirm = async () => {
-  let result: any = await reqAddTrademark(trademarkParams)
-  console.log(result)
+  let result: any = await reqAddOrUpdateTrademark(trademarkParams)
+  // 添加｜修改品牌
   if (result.code === 200) {
     // 关闭对话框
     dialogFormVisible.value = false
     // 提示信息
     ElMessage({
       type: 'success',
-      message: '添加品牌成功',
+      message: trademarkParams ? '修改品牌' : '添加品牌成功',
     })
     // 再次发请求获取新的品牌数据
+    pageNo.value = trademarkParams.id ? pageNo.value : 1 // 添加跳转的第一页，修改不跳转
     getHasTrademark()
   } else {
     // 添加品牌失败
     ElMessage({
       type: 'error',
-      message: '添加品牌失败',
+      message: trademarkParams ? '修改品牌失败' : '添加品牌失败',
     })
   }
 }
@@ -228,6 +246,7 @@ import useUserStore from '@/store/modules/user'
 const userStore = useUserStore()
 const headers = { Token: userStore.token }
 </script>
+
 <style scoped>
 .avatar-uploader .avatar {
   width: 178px;
