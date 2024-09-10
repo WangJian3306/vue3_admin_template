@@ -71,11 +71,11 @@
       :title="trademarkParams.id ? '修改品牌' : '添加品牌'"
       width="500"
     >
-      <el-form style="width: 80%">
-        <el-form-item label="品牌名称" label-width="80px">
+      <el-form style="width: 80%" :model="trademarkParams" :rules="rules" ref="formRef">
+        <el-form-item label="品牌名称" label-width="100px" prop="tmName">
           <el-input placeholder="请输入品牌名称" v-model="trademarkParams.tmName"></el-input>
         </el-form-item>
-        <el-form-item label="品牌LOGO">
+        <el-form-item label="品牌LOGO" label-width="100px" prop="logoUrl">
           <!-- upload组件属性： action：上传图片请求地址 -->
           <el-upload
             class="avatar-uploader"
@@ -99,7 +99,7 @@
   </div>
 </template>
 <script lang="ts" setup name="Tradmark">
-import { ref, onMounted, reactive } from 'vue'
+import { ref, onMounted, reactive, nextTick } from 'vue'
 import type { ComponentSize, UploadProps } from 'element-plus'
 import { ElMessage } from 'element-plus'
 import { reqHasTrademark, reqAddOrUpdateTrademark } from '@/api/product/trademark'
@@ -159,6 +159,17 @@ const addTrademark = () => {
   trademarkParams.tmName = ''
   trademarkParams.logoUrl = ''
   trademarkParams.id = 0
+
+  // 清空校验提示
+  // 第一种写法: ts 的问号语法
+  // formRef.value?.clearValidate('tmName')
+  // formRef.value?.clearValidate('logoUrl')
+
+  // 第二种写法：nextTick()
+  nextTick(() => {
+    formRef.value.clearValidate('tmName')
+    formRef.value.clearValidate('logoUrl')
+  })
 }
 
 // 修改已有品牌的按钮的回调
@@ -172,6 +183,12 @@ const updateTrademark = (row: Trademark) => {
   // trademarkParams.logoUrl = row.logoUrl
   // ES6 合并对象写法
   Object.assign(trademarkParams, row)
+
+  // 清空校验提示
+  nextTick(() => {
+    formRef.value.clearValidate('tmName')
+    formRef.value.clearValidate('logoUrl')
+  })
 }
 
 // 对话框底部取消按钮
@@ -181,6 +198,8 @@ const cancel = () => {
 }
 // 对话框底部确定按钮
 const confirm = async () => {
+  // 在发送请求之前对整个表单进行校验
+  await formRef.value.validate() // 调用这个方法进行表单校验，如果校验全部通过，再执行后续的代码
   let result: any = await reqAddOrUpdateTrademark(trademarkParams)
   // 添加｜修改品牌
   if (result.code === 200) {
@@ -189,7 +208,7 @@ const confirm = async () => {
     // 提示信息
     ElMessage({
       type: 'success',
-      message: trademarkParams ? '修改品牌' : '添加品牌成功',
+      message: trademarkParams.id ? '修改品牌' : '添加品牌成功',
     })
     // 再次发请求获取新的品牌数据
     pageNo.value = trademarkParams.id ? pageNo.value : 1 // 添加跳转的第一页，修改不跳转
@@ -198,7 +217,7 @@ const confirm = async () => {
     // 添加品牌失败
     ElMessage({
       type: 'error',
-      message: trademarkParams ? '修改品牌失败' : '添加品牌失败',
+      message: trademarkParams.id ? '修改品牌失败' : '添加品牌失败',
     })
   }
 }
@@ -232,6 +251,39 @@ const handleAvatarSuccess: UploadProps['onSuccess'] = (response) => {
   // response：即为当前这次上传图片返回的数据
   // uploadFile： 上传的图片信息，及返回的数据
   trademarkParams.logoUrl = response.data
+
+  // 图片上传成功，清除掉对应图片校验结果
+  formRef.value.clearValidate('logoUrl')
+}
+
+// 品牌自定义校验规则方法
+const validatorTmName = (rule: any, value: any, callBack: any) => {
+  // 自定义校验规则
+  if (value.trim().length >= 2) {
+    callBack()
+  } else {
+    // 校验未通过返回的错误提示信息
+    callBack(new Error('品牌名称位数大于等于两位'))
+  }
+}
+
+// 品牌LOGO图片的自定义校验规则
+const validatorLogoUrl = (rule: any, value: any, callBack: any) => {
+  // 如果图片上传
+  if (value) {
+    callBack()
+  } else {
+    callBack(new Error('LOGO图片务必上传'))
+  }
+}
+
+// 获取 el-form 组件实例
+let formRef = ref()
+
+// 表单校验规则对象
+const rules = {
+  tmName: [{ required: true, trigger: 'blur', validator: validatorTmName }],
+  logoUrl: [{ required: true, trigger: 'change', validator: validatorLogoUrl }],
 }
 
 // 组件挂载完毕，发送请求获取数据
