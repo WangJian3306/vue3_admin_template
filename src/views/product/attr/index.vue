@@ -54,10 +54,10 @@
 </template>
 <script lang="ts" setup name="Attr">
 // 组合式 API 函数watch
-import { watch, ref } from 'vue'
+import { watch, ref, reactive } from 'vue'
 // 引入获取已有属性与属性接口
 import { reqAttr } from '@/api/product/attr'
-import type { AttrResponseData, AttrList } from '@/api/product/attr/type'
+import type { AttrResponseData, AttrList, Attr } from '@/api/product/attr/type'
 // 获取分类的仓库
 import useCategoryStore from '@/store/modules/category'
 let categoryStore = useCategoryStore()
@@ -67,6 +67,16 @@ const attrArr = ref<AttrList>([])
 
 // 定义卡片组件内容切换开关
 const scene = ref<number>(0) // sceno = 0, 显示table， scene= 1,显示添加与修改
+
+// 收集新增的属性的数据
+const attrParams = reactive<Attr>({
+  attrName: '', // 新增的属性的名字
+  attrValueList: [
+    // 新增的属性值数组
+  ],
+  categoryId: '', // 三级分类ID
+  categoryLevel: 3, // 代表的是三级分类
+})
 
 // 监听创建三级分类ID变化
 watch(

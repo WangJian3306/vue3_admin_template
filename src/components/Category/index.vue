@@ -6,7 +6,7 @@
           style="width: 240px"
           v-model="categoryStore.c1Id"
           @change="handler"
-          :disabled="scene === 0 ? fasle : true"
+          :disabled="scene === 0 ? false : true"
         >
           <!-- option: label 即为显示文字， value 属性即为下来菜单收集的数据 -->
           <el-option
@@ -22,7 +22,7 @@
           style="width: 240px"
           v-model="categoryStore.c2Id"
           @change="handler1"
-          :disabled="scene === 0 ? fasle : true"
+          :disabled="scene === 0 ? false : true"
         >
           <el-option
             v-for="c2 in categoryStore.c2Arr"
@@ -36,7 +36,7 @@
         <el-select
           style="width: 240px"
           v-model="categoryStore.c3Id"
-          :disabled="scene === 0 ? fasle : true"
+          :disabled="scene === 0 ? false : true"
         >
           <el-option
             v-for="c3 in categoryStore.c3Arr"
