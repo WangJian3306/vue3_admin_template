@@ -2,7 +2,12 @@
   <el-card>
     <el-form :inline="true">
       <el-form-item label="一级分类">
-        <el-select style="width: 240px" v-model="categoryStore.c1Id" @change="handler">
+        <el-select
+          style="width: 240px"
+          v-model="categoryStore.c1Id"
+          @change="handler"
+          :disabled="scene === 0 ? fasle : true"
+        >
           <!-- option: label 即为显示文字， value 属性即为下来菜单收集的数据 -->
           <el-option
             v-for="c1 in categoryStore.c1Arr"
@@ -13,7 +18,12 @@
         </el-select>
       </el-form-item>
       <el-form-item label="二级分类">
-        <el-select style="width: 240px" v-model="categoryStore.c2Id" @change="handler1">
+        <el-select
+          style="width: 240px"
+          v-model="categoryStore.c2Id"
+          @change="handler1"
+          :disabled="scene === 0 ? fasle : true"
+        >
           <el-option
             v-for="c2 in categoryStore.c2Arr"
             :key="c2.id"
@@ -23,7 +33,11 @@
         </el-select>
       </el-form-item>
       <el-form-item label="三级分类">
-        <el-select style="width: 240px" v-model="categoryStore.c3Id">
+        <el-select
+          style="width: 240px"
+          v-model="categoryStore.c3Id"
+          :disabled="scene === 0 ? fasle : true"
+        >
           <el-option
             v-for="c3 in categoryStore.c3Arr"
             :key="c3.id"
@@ -70,5 +84,8 @@ const handler1 = () => {
   // 通知仓库获取二级分类数据
   categoryStore.getC3()
 }
+
+// 接收父组件传递过来的scene
+defineProps(['scene'])
 </script>
 <style scoped></style>
