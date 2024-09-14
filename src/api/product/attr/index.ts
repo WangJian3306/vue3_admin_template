@@ -41,5 +41,5 @@ export const reqAttr = (
 
 // 新增或着修改已有的属性接口
 export const reqAddOrUpdateAttr = (data: Attr) => {
-  request.post<any, any>(API.ADDORUPDATEATTR_URL, data)
+  return request.post<any, any>(API.ADDORUPDATEATTR_URL, data)
 }
