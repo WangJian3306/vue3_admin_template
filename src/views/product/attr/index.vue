@@ -25,8 +25,14 @@
           </el-table-column>
           <el-table-column label="操作" width="120px">
             <!-- row 已有的属性对象 -->
-            <template #="row">
-              <el-button type="primary" size="small" icon="Edit" @click="updateAttr"></el-button>
+            <template #="{ row, $index }">
+              <!-- 修改已有属性的按钮 -->
+              <el-button
+                type="primary"
+                size="small"
+                icon="Edit"
+                @click="updateAttr(row)"
+              ></el-button>
               <el-button type="primary" size="small" icon="Delete"></el-button>
             </template>
           </el-table-column>
@@ -159,8 +165,10 @@ const addAttr = () => {
 }
 
 // 修改属性
-const updateAttr = () => {
+const updateAttr = (row: Attr) => {
   scene.value = 1
+  // 将已有的属性对象赋值给attrParams对象即可
+  Object.assign(attrParams, JSON.parse(JSON.stringify(row))) // JSON.parse(JSON.stringify(row) 目的是为了深拷贝
 }
 // 取消按钮回调
 const cancel = () => {
