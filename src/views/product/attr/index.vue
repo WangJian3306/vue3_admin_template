@@ -55,16 +55,26 @@
             <!-- row：即为当前属性值对象 -->
             <template #="{ row, $index }">
               <el-input
+                :ref="(vc: any) => (inputArr[$index] = vc)"
                 v-if="row.flag"
                 @blur="toLook(row, $index)"
                 placeholder="请你输入属性值名称"
                 v-model="row.valueName"
                 size="small"
               ></el-input>
-              <div v-else @click="toEdit(row)">{{ row.valueName }}</div>
+              <div v-else @click="toEdit(row, $index)">{{ row.valueName }}</div>
             </template>
           </el-table-column>
-          <el-table-column label="属性值操作"></el-table-column>
+          <el-table-column label="属性值操作">
+            <template #="{ index }">
+              <el-button
+                type="primary"
+                size="small"
+                icon="Delete"
+                @click="attrParams.attrValueList.splice(index, 1)"
+              ></el-button>
+            </template>
+          </el-table-column>
         </el-table>
         <el-button
           type="primary"
@@ -81,7 +91,7 @@
 </template>
 <script lang="ts" setup name="Attr">
 // 组合式 API 函数watch
-import { watch, ref, reactive } from 'vue'
+import { watch, ref, reactive, nextTick } from 'vue'
 // 引入获取已有属性与属性接口
 import { reqAttr, reqAddOrUpdateAttr } from '@/api/product/attr'
 import type { AttrResponseData, AttrList, Attr, AttrValue } from '@/api/product/attr/type'
@@ -107,6 +117,9 @@ let attrParams = reactive<Attr>({
   categoryId: '', // 三级分类ID
   categoryLevel: 3, // 代表的是三级分类
 })
+
+// 准备一个数组：将来存储对应的组件实例el-input
+const inputArr = ref<any>([])
 
 // 监听创建三级分类ID变化
 watch(
@@ -160,6 +173,10 @@ const addAttrValue = () => {
   attrParams.attrValueList.push({
     valueName: '',
     flag: true, //控制每一个属性值编辑模式与展示模式的切换
+  })
+  // 获取最后el-input组件进行聚焦
+  nextTick(() => {
+    inputArr.value[attrParams.attrValueList.length - 1].focus()
   })
 }
 
@@ -221,9 +238,15 @@ const toLook = (row: AttrValue, $index: number) => {
   row.flag = false
 }
 // 属性值div点击事件
-const toEdit = (row: AttrValue) => {
+const toEdit = (row: AttrValue, $index: number) => {
   // 相应的属性值对象flag变为true，展示input
   row.flag = true
+
+  // nextTick：响应式数据发生变化，获取更新DOM（组件实例）
+  nextTick(() => {
+    console.log(inputArr.value[$index])
+    inputArr.value[$index].focus()
+  })
 }
 </script>
 <style scoped></style>
