@@ -17,7 +17,7 @@
           <el-table-column label="序号" type="index" align="center" width="80px"></el-table-column>
           <el-table-column label="属性名称" width="120px" prop="attrName"></el-table-column>
           <el-table-column label="属性值名称">
-            <template #="{ row, $index }">
+            <template #="{ row }">
               <el-tag style="margin: 5px" v-for="item in row.attrValueList" :key="item.id">
                 {{ item.valueName }}
               </el-tag>
@@ -25,7 +25,7 @@
           </el-table-column>
           <el-table-column label="操作" width="120px">
             <!-- row 已有的属性对象 -->
-            <template #="{ row, $index }">
+            <template #="{ row }">
               <!-- 修改已有属性的按钮 -->
               <el-button
                 type="primary"
@@ -33,7 +33,15 @@
                 icon="Edit"
                 @click="updateAttr(row)"
               ></el-button>
-              <el-button type="primary" size="small" icon="Delete"></el-button>
+              <el-popconfirm
+                :title="`确定删除${row.attrName}?`"
+                width="200px"
+                @confirm="deleteAttr(row.id)"
+              >
+                <template #reference>
+                  <el-button type="primary" size="small" icon="Delete"></el-button>
+                </template>
+              </el-popconfirm>
             </template>
           </el-table-column>
         </el-table>
@@ -97,9 +105,9 @@
 </template>
 <script lang="ts" setup name="Attr">
 // 组合式 API 函数watch
-import { watch, ref, reactive, nextTick } from 'vue'
+import { watch, ref, reactive, nextTick, onBeforeUnmount } from 'vue'
 // 引入获取已有属性与属性接口
-import { reqAttr, reqAddOrUpdateAttr } from '@/api/product/attr'
+import { reqAttr, reqAddOrUpdateAttr, reqRemoveAttr } from '@/api/product/attr'
 import type { AttrResponseData, AttrList, Attr, AttrValue } from '@/api/product/attr/type'
 // 获取分类的仓库
 import useCategoryStore from '@/store/modules/category'
@@ -256,5 +264,29 @@ const toEdit = (row: AttrValue, $index: number) => {
     inputArr.value[$index].focus()
   })
 }
+
+// 删除某一个已有的属性方法回调
+const deleteAttr = async (attrId: number) => {
+  const result: any = await reqRemoveAttr(attrId)
+  if (result.code === 200) {
+    ElMessage({
+      type: 'success',
+      message: '删除成功',
+    })
+    // 获取一次已有的属性与属性值
+    getAttr()
+  } else {
+    ElMessage({
+      type: 'error',
+      message: '删除失败',
+    })
+  }
+}
+
+// 路由组件销毁的时候，把仓库分类相关的数据清空
+onBeforeUnmount(() => {
+  // 清空仓库数据
+  categoryStore.$reset()
+})
 </script>
 <style scoped></style>
