@@ -250,12 +250,14 @@ const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
         type: 'error',
         message: '上传文件大小必须小于 4M',
       })
+      return false
     }
   } else {
     ElMessage({
       type: 'error',
       message: '上传的文件类型需要为：png、jpg、gif',
     })
+    return false
   }
 }
 
