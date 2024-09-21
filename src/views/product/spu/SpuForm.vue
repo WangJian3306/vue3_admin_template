@@ -52,11 +52,34 @@
         添加属性值
       </el-button>
       <!-- table 展示销售属性与属性值的地方 -->
-      <el-table border style="margin: 10px 0px">
+      <el-table border style="margin: 10px 0px" :data="saleAttr">
         <el-table-column label="序号" type="index" align="center" width="80px"></el-table-column>
-        <el-table-column label="销售属性名字" width="120px"></el-table-column>
-        <el-table-column label="销售属性值"></el-table-column>
-        <el-table-column label="销售属性值" width="120px"></el-table-column>
+        <el-table-column label="销售属性名字" width="120px" prop="saleAttrName"></el-table-column>
+        <el-table-column label="销售属性值">
+          <!-- row即为当前spu已有的销售属性对象 -->
+          <template v-slot="{ row }">
+            <el-tag
+              v-for="item in row.spuSaleAttrValueList"
+              :key="item.id"
+              style="margin: 0px 5px"
+              class="mx-1"
+              closable
+            >
+              {{ item.saleAttrValueName }}
+            </el-tag>
+            <el-button type="primary" size="small" icon="Plus"></el-button>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="120px">
+          <template v-slot="{ $index }">
+            <el-button
+              type="primary"
+              size="small"
+              icon="Delete"
+              @click="saleAttr.splice($index, 1)"
+            ></el-button>
+          </template>
+        </el-table-column>
       </el-table>
     </el-form-item>
     <el-form-item>
