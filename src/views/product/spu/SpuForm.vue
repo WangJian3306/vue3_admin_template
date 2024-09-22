@@ -113,7 +113,14 @@
       </el-table>
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" size="default">保存</el-button>
+      <el-button
+        type="primary"
+        size="default"
+        @click="save"
+        :disabled="saleAttr.length > 0 ? false : true"
+      >
+        保存
+      </el-button>
       <el-button type="primary" size="default" @click="cancel">取消</el-button>
     </el-form-item>
   </el-form>
@@ -136,6 +143,7 @@ import {
   reqAllTradeMark,
   reqSpuImageList,
   reqSpuHasSaleAttr,
+  reqAddOrUpdateSpu,
 } from '@/api/product/spu'
 import { computed, ref } from 'vue'
 import { ElMessage, type UploadUserFile } from 'element-plus'
@@ -165,7 +173,7 @@ let SpuParams = ref<SpuData>({
   spuName: '',
   description: '',
   tmId: '',
-  sppuImageList: [],
+  spuImageList: [],
   spuSaleAttrList: [],
 })
 
@@ -202,7 +210,6 @@ const initHasSpuData = async (spu: SpuData) => {
   if (result3.code === 200) {
     allSaleAttr.value = result3.data
   }
-  console.log(allSaleAttr.value)
 }
 
 // 照片墙点击预览按钮的时候触发的钩子
@@ -318,6 +325,38 @@ const toLook = (row: SaleAttr) => {
   row.spuSaleAttrValueList.push(newSaleAttrValue)
   // 切换为查看模式
   row.flag = false
+}
+
+// 保存按钮的回调
+const save = async () => {
+  // 整理参数
+  // 1. 照片墙的数据
+  SpuParams.value.spuImageList = imgList.value.map((item: any) => {
+    return {
+      imgName: item.name, // 图片的名字
+      imgUrl: (item.response && item.response.data) || item.url,
+    }
+  })
+  // 2. 整理销售属性的数据
+  SpuParams.value.spuSaleAttrList = saleAttr.value
+  // console.log(SpuParams.value.spuSaleAttrList)
+
+  // 发送请求：添加SPU｜更新已有的SPU
+  const result = await reqAddOrUpdateSpu(SpuParams.value)
+  console.log(result)
+  if (result.code === 200) {
+    ElMessage({
+      type: 'success',
+      message: SpuParams.value.id ? '更新成功' : '添加成功',
+    })
+    // 切换场景为0
+    $emit('changeScene', 0)
+  } else {
+    ElMessage({
+      type: 'error',
+      message: SpuParams.value.id ? '更新失败' : '添加失败',
+    })
+  }
 }
 
 // 对外暴露

@@ -13,7 +13,7 @@ export interface SpuData {
   category3id: string | number
   tmId: number | string
   spuSaleAttrList: null | SaleAttr[]
-  sppuImageList: null | SpuImg[]
+  spuImageList: null | SpuImg[]
 }
 // 数组：元素都是已有SPU数据类型
 export type Records = SpuData[]
