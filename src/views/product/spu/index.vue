@@ -25,7 +25,13 @@
           <el-table-column label="操作">
             <!-- row:即为已有的SPU对象 -->
             <template v-slot="{ row, $index }">
-              <el-button type="primary" size="small" icon="Plus" title="添加SKU"></el-button>
+              <el-button
+                type="primary"
+                size="small"
+                icon="Plus"
+                title="添加SKU"
+                @click="addSku"
+              ></el-button>
               <el-button
                 type="primary"
                 size="small"
@@ -53,7 +59,7 @@
       <!-- 添加SPU|修改SPU子组件 -->
       <SpuForm ref="spu" v-show="scene === 1" @changeScene="changeScene"></SpuForm>
       <!-- 添加SKU的子组件 -->
-      <SkuForm v-show="scene === 2"></SkuForm>
+      <SkuForm v-show="scene === 2" @changeScene="changeScene"></SkuForm>
     </el-card>
   </div>
 </template>
@@ -69,7 +75,7 @@ import useCategoryStore from '@/store/modules/category'
 const categoryStore = useCategoryStore()
 
 // 场景的数据
-let scene = ref<number>(0) // 0 显示已有SPU 1 添加或者修改SPU 2 添加SKU
+let scene = ref<number>(2) // 0 显示已有SPU 1 添加或者修改SPU 2 添加SKU
 // 分页器默认页码
 let pageNo = ref<number>(1)
 // 每一页展示几条数据
@@ -123,12 +129,12 @@ const addSpu = () => {
 const changeScene = (obj: any) => {
   // 子组件SpuForm点击取消变为场景 0
   scene.value = obj.flag
-  if (obj.params === 'update') {
-    // 更新留在当前页码
-    getHasSpu(pageNo.value)
-  } else {
+  if (obj.params === 'add') {
     // 添加跳转第一页
     getHasSpu()
+  } else {
+    // 更新留在当前页码
+    getHasSpu(pageNo.value)
   }
 }
 
@@ -137,6 +143,11 @@ const updateSpu = (row: SpuData) => {
   scene.value = 1
   // 调用子组件实例方法获取完整已有SPU的数据
   spu.value.initHasSpuData(row)
+}
+
+// 添加SKU
+const addSku = () => {
+  scene.value = 2
 }
 </script>
 <style scoped></style>

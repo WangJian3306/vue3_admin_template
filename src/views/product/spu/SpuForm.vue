@@ -151,7 +151,7 @@ import { ElMessage, type UploadUserFile } from 'element-plus'
 let $emit = defineEmits(['changeScene'])
 // 点击取消按钮：通知父组件切换场景为1
 const cancel = () => {
-  $emit('changeScene', { flag: 0, params: 'update' })
+  $emit('changeScene', { flag: 0, params: '' })
 }
 
 // 存储已有的SPU这些数据
