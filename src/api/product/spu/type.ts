@@ -10,7 +10,7 @@ export interface SpuData {
   id?: number
   spuName: string
   description: string
-  category3id: string | number
+  category3Id: string | number
   tmId: number | string
   spuSaleAttrList: null | SaleAttr[]
   spuImageList: null | SpuImg[]

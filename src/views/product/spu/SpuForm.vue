@@ -151,7 +151,7 @@ import { ElMessage, type UploadUserFile } from 'element-plus'
 let $emit = defineEmits(['changeScene'])
 // 点击取消按钮：通知父组件切换场景为1
 const cancel = () => {
-  $emit('changeScene', 0)
+  $emit('changeScene', { flag: 0, params: 'update' })
 }
 
 // 存储已有的SPU这些数据
@@ -169,7 +169,7 @@ const dialogImageUrl = ref<string>('')
 
 // 存储已有的SPU对象
 let SpuParams = ref<SpuData>({
-  category3id: '',
+  category3Id: '',
   spuName: '',
   description: '',
   tmId: '',
@@ -183,8 +183,8 @@ const saleAttrIdAndValueName = ref<string>('')
 // 初始化 SPU 数据
 const initHasSpuData = async (spu: SpuData) => {
   // 存储已有的SPU对象，将来在模版中展示
-  SpuParams.value = spu
   // spu: 即为父组件传递过来的已有SPU对象
+  SpuParams.value = spu
   // 获取全部品牌的数据
   const result: AllTradeMark = await reqAllTradeMark()
   if (result.code === 200) {
@@ -350,7 +350,7 @@ const save = async () => {
       message: SpuParams.value.id ? '更新成功' : '添加成功',
     })
     // 切换场景为0
-    $emit('changeScene', 0)
+    $emit('changeScene', { flag: 0, params: SpuParams.value.id ? 'update' : 'add' })
   } else {
     ElMessage({
       type: 'error',
@@ -359,7 +359,40 @@ const save = async () => {
   }
 }
 
+// 添加一个新的SPU初始化请求方法
+const initAddSpu = async (c3Id: number | string) => {
+  // 清空数据
+  Object.assign(SpuParams.value, {
+    id: '',
+    category3Id: '',
+    spuName: '',
+    description: '',
+    tmId: '',
+    spuImageList: [],
+    spuSaleAttrList: [],
+  })
+  // 清空照片墙
+  imgList.value = []
+  // 清空销售属性
+  saleAttr.value = []
+  // 清空数据
+  saleAttrIdAndValueName.value = ''
+  // 存储三级分类ID
+  SpuParams.value.category3Id = c3Id
+  // 获取全部品牌的数据
+  const result: AllTradeMark = await reqAllTradeMark()
+  if (result.code === 200) {
+    allTradeMark.value = result.data
+  }
+
+  // 获取整个项目全部SPU的销售属性
+  const result2: HasSaleAttrResponseData = await reqAllSaleAttr()
+  if (result2.code === 200) {
+    allSaleAttr.value = result2.data
+  }
+}
+
 // 对外暴露
-defineExpose({ initHasSpuData })
+defineExpose({ initHasSpuData, initAddSpu })
 </script>
 <style scoped></style>
