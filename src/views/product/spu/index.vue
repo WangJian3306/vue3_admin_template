@@ -30,7 +30,7 @@
                 size="small"
                 icon="Plus"
                 title="添加SKU"
-                @click="addSku"
+                @click="addSku(row)"
               ></el-button>
               <el-button
                 type="primary"
@@ -59,7 +59,7 @@
       <!-- 添加SPU|修改SPU子组件 -->
       <SpuForm ref="spu" v-show="scene === 1" @changeScene="changeScene"></SpuForm>
       <!-- 添加SKU的子组件 -->
-      <SkuForm v-show="scene === 2" @changeScene="changeScene"></SkuForm>
+      <SkuForm ref="sku" v-show="scene === 2" @changeScene="changeScene"></SkuForm>
     </el-card>
   </div>
 </template>
@@ -75,7 +75,7 @@ import useCategoryStore from '@/store/modules/category'
 const categoryStore = useCategoryStore()
 
 // 场景的数据
-let scene = ref<number>(2) // 0 显示已有SPU 1 添加或者修改SPU 2 添加SKU
+let scene = ref<number>(0) // 0 显示已有SPU 1 添加或者修改SPU 2 添加SKU
 // 分页器默认页码
 let pageNo = ref<number>(1)
 // 每一页展示几条数据
@@ -84,8 +84,10 @@ let pageSize = ref<number>(3)
 let records = ref<Records>([])
 // 存储已有SPU总个数
 let total = ref<number>(0)
-// 获取子组件实例
+// 获取子组件实例SpuForm
 let spu = ref<any>()
+// 获取子组件实例SkuForm
+let sku = ref<any>()
 
 // 监听三级分裂ID变化
 watch(
@@ -146,8 +148,11 @@ const updateSpu = (row: SpuData) => {
 }
 
 // 添加SKU
-const addSku = () => {
+const addSku = (row: SpuData) => {
+  // 切换为场景2
   scene.value = 2
+  // 调用子组件的方法初始化添加SKU的数据
+  sku.value.initSkuData(categoryStore.c1Id, categoryStore.c2Id, row)
 }
 </script>
 <style scoped></style>
