@@ -39,7 +39,13 @@
                 title="修改SPU"
                 @click="updateSpu(row)"
               ></el-button>
-              <el-button type="primary" size="small" icon="View" title="查看SKU列表"></el-button>
+              <el-button
+                type="primary"
+                size="small"
+                icon="View"
+                title="查看SKU列表"
+                @click="getSku(row)"
+              ></el-button>
               <el-button type="primary" size="small" icon="Delete" title="删除SKU"></el-button>
             </template>
           </el-table-column>
@@ -60,6 +66,20 @@
       <SpuForm ref="spu" v-show="scene === 1" @changeScene="changeScene"></SpuForm>
       <!-- 添加SKU的子组件 -->
       <SkuForm ref="sku" v-show="scene === 2" @changeScene="changeScene"></SkuForm>
+
+      <!-- dialog对话框：展示已有的SKU数据 -->
+      <el-dialog v-model="show" title="SKU列表">
+        <el-table :data="skuArr" border>
+          <el-table-column label="SKU 名字" prop="skuName"></el-table-column>
+          <el-table-column label="SKU 价格" prop="price"></el-table-column>
+          <el-table-column label="SKU 重量" prop="weight"></el-table-column>
+          <el-table-column label="SKU 图片">
+            <template v-slot="{ row }">
+              <img :src="row.skuDefaultImg" style="width: 100px; height: 100px" />
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-dialog>
     </el-card>
   </div>
 </template>
@@ -68,8 +88,14 @@
 import SpuForm from './SpuForm.vue'
 import SkuForm from './SkuForm.vue'
 import { ref, watch } from 'vue'
-import { reqHasSpu } from '@/api/product/spu'
-import { type Records, type HasSpuResponseData, type SpuData } from '@/api/product/spu/type'
+import { reqHasSpu, reqSkuList } from '@/api/product/spu'
+import {
+  type Records,
+  type HasSpuResponseData,
+  type SpuData,
+  type SkuInfoData,
+  type SkuData,
+} from '@/api/product/spu/type'
 // 引入分类的仓库
 import useCategoryStore from '@/store/modules/category'
 const categoryStore = useCategoryStore()
@@ -88,6 +114,10 @@ let total = ref<number>(0)
 let spu = ref<any>()
 // 获取子组件实例SkuForm
 let sku = ref<any>()
+// 存储全部SKU数据
+let skuArr = ref<SkuData[]>([])
+// 控制 dialog 显示与隐藏
+let show = ref<boolean>(false)
 
 // 监听三级分裂ID变化
 watch(
@@ -153,6 +183,16 @@ const addSku = (row: SpuData) => {
   scene.value = 2
   // 调用子组件的方法初始化添加SKU的数据
   sku.value.initSkuData(categoryStore.c1Id, categoryStore.c2Id, row)
+}
+
+// 展示 SKU
+const getSku = async (row: SpuData) => {
+  const result: SkuInfoData = await reqSkuList(row.id as number)
+  if (result.code === 200) {
+    skuArr.value = result.data
+    // 显示对话框
+    show.value = true
+  }
 }
 </script>
 <style scoped></style>
