@@ -75,7 +75,7 @@ import { reactive, ref } from 'vue'
 import { reqAttr } from '@/api/product/attr'
 import { reqSpuHasSaleAttr, reqSpuImageList, reqAddSku } from '@/api/product/spu'
 import type { AttrResponseData } from '@/api/product/attr/type'
-import { ElMessage, type TableInstance } from 'element-plus';
+import { ElMessage, type TableInstance } from 'element-plus'
 
 // 平台属性
 let attrArr = ref<any>([])
@@ -89,22 +89,23 @@ let table = ref<TableInstance>()
 // 收集SKU的参数
 let skuParams = reactive<SkuData>({
   // 父组件传递的数据
-  "category3Id": "",  // 三级分类的ID
-  "spuId": "",        // 已有的SPU的ID
-  "tmId": "",         // SPU 品牌ID
+  category3Id: '', // 三级分类的ID
+  spuId: '', // 已有的SPU的ID
+  tmId: '', // SPU 品牌ID
   // v-model 收集
-  "skuName": "", // SKU 名字
-  "price": "",          // SKU 价格
-  "weight": "",  // SKU 重量
-  "skuDesc": "", // SKU 描述
-  "skuAttrValueList": [],  // 平台属性
-  "skuSaleAttrValueList": [ // 销售属性
+  skuName: '', // SKU 名字
+  price: '', // SKU 价格
+  weight: '', // SKU 重量
+  skuDesc: '', // SKU 描述
+  skuAttrValueList: [], // 平台属性
+  skuSaleAttrValueList: [
+    // 销售属性
     {
-      "saleAttrId": "", // 销售属性ID
-      "saleAttrValueId": "", // 销售属性值ID
-    }
+      saleAttrId: '', // 销售属性ID
+      saleAttrValueId: '', // 销售属性值ID
+    },
   ],
-  "skuDefaultImg": "", // 售卖SKU图片地址
+  skuDefaultImg: '', // 售卖SKU图片地址
 })
 
 // 取消按钮回调
@@ -138,11 +139,11 @@ const initSkuData = async (c1Id: number | string, c2Id: number | string, spu: Sp
 }
 
 // 设置默认图片的方法回调
-const handler = (row:SpuImg)=> {
+const handler = (row: SpuImg) => {
   // 点击的时候，全部的复选框不勾选
   table.value?.clearSelection()
   // 勾选选中的行
-  table.value?.toggleRowSelection(row,true)
+  table.value?.toggleRowSelection(row, true)
   // 收集图片地址
   skuParams.skuDefaultImg = row.imgUrl
 }
@@ -151,34 +152,34 @@ const handler = (row:SpuImg)=> {
 const save = async () => {
   // 整理参数
   // 平台属性
-  skuParams.skuAttrValueList =  attrArr.value.reduce((prev:any, next: any) => {
-    if(next.attrIdAndValueId) {
-      let [attrId,valueId] = next.attrIdAndValueId.split(':')
+  skuParams.skuAttrValueList = attrArr.value.reduce((prev: any, next: any) => {
+    if (next.attrIdAndValueId) {
+      let [attrId, valueId] = next.attrIdAndValueId.split(':')
       prev.push({
         attrId,
-        valueId
+        valueId,
       })
     }
-    return prev;
-  },[]) 
+    return prev
+  }, [])
   // 销售属性
-  skuParams.skuSaleAttrValueList = saleArr.value.reduce((prev:any, next:any) => {
-    if(next.saleAttrValueId) {
-      let [saleAttrId,saleAttrValueId] = next.saleIdAndValueId.split(':')
+  skuParams.skuSaleAttrValueList = saleArr.value.reduce((prev: any, next: any) => {
+    if (next.saleAttrValueId) {
+      let [saleAttrId, saleAttrValueId] = next.saleIdAndValueId.split(':')
       prev.push({
         saleAttrId,
-        saleAttrValueId
+        saleAttrValueId,
       })
     }
-    return prev;
-  },[])
+    return prev
+  }, [])
 
   // 发请求
-  const result =  await reqAddSku(skuParams)
+  const result = await reqAddSku(skuParams)
   if (result.code === 200) {
     ElMessage({
       type: 'success',
-      message: '添加SKU成功'
+      message: '添加SKU成功',
     })
 
     // 通知父组件切换场景为0
@@ -186,11 +187,11 @@ const save = async () => {
   } else {
     ElMessage({
       type: 'error',
-      message: '添加SKU失败'
+      message: '添加SKU失败',
     })
   }
 
-  // 
+  //
 }
 
 // 对外暴露方法

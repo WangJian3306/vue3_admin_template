@@ -111,7 +111,7 @@ export interface SkuData {
   price: string | number // SKU 价格
   weight: string | number // SKU 重量
   skuDesc: string // SKU 描述
-  skuAttrValueList: SkuAttrValue[], // 平台属性
+  skuAttrValueList: SkuAttrValue[] // 平台属性
   skuSaleAttrValueList: SkuSaleAttrValue[] // 销售属性
   skuDefaultImg: string // 售卖SKU图片地址
 }
