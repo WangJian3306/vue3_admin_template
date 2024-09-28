@@ -343,7 +343,7 @@ const save = async () => {
 
   // 发送请求：添加SPU｜更新已有的SPU
   const result = await reqAddOrUpdateSpu(SpuParams.value)
-  console.log(result)
+  // console.log(result)
   if (result.code === 200) {
     ElMessage({
       type: 'success',
