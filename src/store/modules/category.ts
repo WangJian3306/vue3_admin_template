@@ -36,7 +36,7 @@ const useCategoryStore = defineStore('Category', {
       const result: CategoryResponseData = await reqC2(this.c1Id)
       if (result.code === 200) {
         this.c2Arr = result.data
-        console.log(result.data)
+        // console.log(result.data)
       }
     },
 

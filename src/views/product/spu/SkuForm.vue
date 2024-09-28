@@ -13,7 +13,7 @@
       <el-input placeholder="SKU描述" type="textarea" v-model="skuParams.skuDesc"></el-input>
     </el-form-item>
     <el-form-item label="平台属性">
-      <el-form inline="true">
+      <el-form :inline="true">
         <el-form-item v-for="item in attrArr" :key="item.id" :label="item.attrName">
           <el-select style="width: 240px" v-model="item.attrIdAndValueId">
             <el-option
@@ -27,7 +27,7 @@
       </el-form>
     </el-form-item>
     <el-form-item label="销售属性">
-      <el-form inline="true">
+      <el-form :inline="true">
         <el-form-item v-for="item in saleArr" :key="item.id" :label="item.saleAttrName">
           <el-select style="width: 240px" v-model="item.saleIdAndValueId">
             <el-option
@@ -65,7 +65,9 @@
 <script lang="ts" setup name="SkuForm">
 import type {
   SaleAttrResponseData,
+  SkuAttr,
   SkuData,
+  SkuSaleAttr,
   SpuData,
   SpuHasImg,
   SpuImg,
@@ -78,9 +80,9 @@ import type { AttrResponseData } from '@/api/product/attr/type'
 import { ElMessage, type TableInstance } from 'element-plus'
 
 // 平台属性
-let attrArr = ref<any>([])
+let attrArr = ref<SkuAttr[]>([])
 // 销售属性
-let saleArr = ref<any>([])
+let saleArr = ref<SkuSaleAttr[]>([])
 // 照片墙
 let imgArr = ref<SpuImg[]>([])
 // 获取 table 组件实例

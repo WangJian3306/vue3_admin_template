@@ -105,7 +105,7 @@
 </template>
 <script lang="ts" setup name="Attr">
 // 组合式 API 函数watch
-import { watch, ref, reactive, nextTick, onBeforeUnmount } from 'vue'
+import { watch, ref, reactive, nextTick } from 'vue'
 // 引入获取已有属性与属性接口
 import { reqAttr, reqAddOrUpdateAttr, reqRemoveAttr } from '@/api/product/attr'
 import type { AttrResponseData, AttrList, Attr, AttrValue } from '@/api/product/attr/type'
@@ -282,11 +282,5 @@ const deleteAttr = async (attrId: number) => {
     })
   }
 }
-
-// 路由组件销毁的时候，把仓库分类相关的数据清空
-onBeforeUnmount(() => {
-  // 清空仓库数据
-  categoryStore.$reset()
-})
 </script>
 <style scoped></style>

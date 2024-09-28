@@ -1,3 +1,5 @@
+import type { Attr } from '../attr/type'
+
 // 服务器全部接口返回的数据类型
 export interface ResponseData {
   code: number
@@ -90,13 +92,13 @@ export interface HasSaleAttrResponseData extends ResponseData {
   data: HasSaleAttr[]
 }
 
-// 平台属性
+// SKU 平台属性
 export interface SkuAttrValue {
   attrId: string | number // 平台属性ID
   valueId: string | number // 属性值ID
 }
 
-// 销售属性
+// SKU 销售属性
 export interface SkuSaleAttrValue {
   saleAttrId: string | number // 销售属性ID
   saleAttrValueId: string | number // 销售属性值ID
@@ -119,4 +121,14 @@ export interface SkuData {
 // 获取 SKU 数据接口的 ts 类型
 export interface SkuInfoData extends ResponseData {
   data: SkuData[]
+}
+
+// 平台属性加个字段用于获取SKU平台属性
+export interface SkuAttr extends Attr {
+  attrIdAndValueId?: string
+}
+
+// SPU 销售属性加个字段用于获取SKU销售属性
+export interface SkuSaleAttr extends SaleAttr {
+  saleIdAndValueId?: string
 }

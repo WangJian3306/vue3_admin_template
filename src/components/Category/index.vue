@@ -51,7 +51,7 @@
 </template>
 <script lang="ts" setup name="Category">
 // 引入生命周期函数钩子
-import { onMounted } from 'vue'
+import { onMounted, onBeforeUnmount } from 'vue'
 // 引入分类相关的仓库
 import useCategoryStore from '@/store/modules/category'
 
@@ -87,5 +87,11 @@ const handler1 = () => {
 
 // 接收父组件传递过来的scene
 defineProps(['scene'])
+
+// 路由组件销毁的时候，把仓库分类相关的数据清空
+onBeforeUnmount(() => {
+  // 清空仓库数据
+  categoryStore.$reset()
+})
 </script>
 <style scoped></style>
