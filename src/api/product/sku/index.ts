@@ -5,8 +5,18 @@ import type { SkuResponseData } from './type'
 enum API {
   // 获取已有的商品的数据-SKU
   SKU_URL = '/admin/product/list/',
+  // 商品上架
+  SALE_URL = '/admin/product/onSale/',
+  // 商品下架
+  CANCELSALE_URL = '/admin/product/cancelSale/',
 }
 
 // 获取商品SKU的接口
 export const reqSkuList = (page: number, limit: number) =>
   request.get<any, SkuResponseData>(API.SKU_URL + `${page}/${limit}`)
+
+// 已有商品上架的请求
+export const reqSaleSku = (skuId: number) => request.get<any, any>(API.SALE_URL + skuId)
+
+// 商品下架
+export const reqCancelSale = (skuId: number) => request.get<any, any>(API.CANCELSALE_URL + skuId)

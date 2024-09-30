@@ -29,6 +29,8 @@ export interface SkuData {
   skuAttrValueList: SkuAttrValue[] // 平台属性
   skuSaleAttrValueList: SkuSaleAttrValue[] // 销售属性
   skuDefaultImg: string // 售卖SKU图片地址
+  isSale: number // 商品上架与下架
+  id: number // 商品ID
 }
 
 // 获取 SKU 接口返回的数据 ts 类型
