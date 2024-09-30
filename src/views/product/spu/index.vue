@@ -24,7 +24,7 @@
           ></el-table-column>
           <el-table-column label="操作">
             <!-- row:即为已有的SPU对象 -->
-            <template v-slot="{ row, $index }">
+            <template v-slot="{ row }">
               <el-button
                 type="primary"
                 size="small"
@@ -46,7 +46,15 @@
                 title="查看SKU列表"
                 @click="getSku(row)"
               ></el-button>
-              <el-button type="primary" size="small" icon="Delete" title="删除SKU"></el-button>
+              <el-popconfirm
+                :title="`确定删除 ${row.spuName} ?`"
+                width="200px"
+                @confirm="deleteSpu(row)"
+              >
+                <template #reference>
+                  <el-button type="primary" size="small" icon="Delete" title="删除SKU"></el-button>
+                </template>
+              </el-popconfirm>
             </template>
           </el-table-column>
         </el-table>
@@ -88,7 +96,7 @@
 import SpuForm from './SpuForm.vue'
 import SkuForm from './SkuForm.vue'
 import { ref, watch } from 'vue'
-import { reqHasSpu, reqSkuList } from '@/api/product/spu'
+import { reqHasSpu, reqRemoveSpu, reqSkuList } from '@/api/product/spu'
 import {
   type Records,
   type HasSpuResponseData,
@@ -98,6 +106,7 @@ import {
 } from '@/api/product/spu/type'
 // 引入分类的仓库
 import useCategoryStore from '@/store/modules/category'
+import { ElMessage } from 'element-plus'
 const categoryStore = useCategoryStore()
 
 // 场景的数据
@@ -192,6 +201,24 @@ const getSku = async (row: SpuData) => {
     skuArr.value = result.data
     // 显示对话框
     show.value = true
+  }
+}
+
+// 删除SPU
+const deleteSpu = async (row: SpuData) => {
+  const result: any = await reqRemoveSpu(row.id as number)
+  if (result.code === 200) {
+    ElMessage({
+      type: 'success',
+      message: '删除成功',
+    })
+    // 获取一次已有的SPU
+    getHasSpu(records.value.length > 0 ? pageNo.value : pageNo.value - 1)
+  } else {
+    ElMessage({
+      type: 'error',
+      message: '删除失败',
+    })
   }
 }
 </script>
