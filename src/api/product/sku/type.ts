@@ -9,12 +9,30 @@ export interface ResponseData {
 export interface SkuAttrValue {
   attrId: string | number // 平台属性ID
   valueId: string | number // 属性值ID
+  attrName: string
+  id: number
+  skuId: number
+  valueName: string
+}
+
+// SKU 图片
+export interface SkuImg {
+  id: number
+  skuId: number
+  imgName: string
+  imgUrl: string
+  spuImgId: number
+  isDefault: string
 }
 
 // SKU 销售属性
 export interface SkuSaleAttrValue {
   saleAttrId: string | number // 销售属性ID
   saleAttrValueId: string | number // 销售属性值ID
+  id: number
+  saleAttrName: string
+  saleAttrValueName: string
+  skuId: number
 }
 
 // SKU 数据
@@ -28,6 +46,7 @@ export interface SkuData {
   skuDesc: string // SKU 描述
   skuAttrValueList: SkuAttrValue[] // 平台属性
   skuSaleAttrValueList: SkuSaleAttrValue[] // 销售属性
+  skuImageList: SkuImg[] // SKU 图片
   skuDefaultImg: string // 售卖SKU图片地址
   isSale: number // 商品上架与下架
   id: number // 商品ID
@@ -48,4 +67,9 @@ export interface SkuResponseData extends ResponseData {
     searchCount: true
     pages: boolean
   }
+}
+
+// SKU商品详细接口TS类型
+export interface SkuInfoData extends ResponseData {
+  data: SkuData
 }
