@@ -52,7 +52,7 @@
                 @confirm="deleteSpu(row)"
               >
                 <template #reference>
-                  <el-button type="primary" size="small" icon="Delete" title="删除SKU"></el-button>
+                  <el-button type="primary" size="small" icon="Delete" title="删除SPU"></el-button>
                 </template>
               </el-popconfirm>
             </template>
