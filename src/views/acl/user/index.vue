@@ -11,7 +11,7 @@
     </el-form>
   </el-card>
   <el-card style="margin: 10px 0px">
-    <el-button type="primary" size="default">添加用户</el-button>
+    <el-button type="primary" size="default" @click="addUser">添加用户</el-button>
     <el-button type="primary" size="default">批量删除</el-button>
     <!-- table 展示用户信息 -->
     <el-table style="margin: 10px 0px" border :data="userArr">
@@ -51,7 +51,9 @@
       <el-table-column label="操作" width="300px" align="center">
         <template v-slot="{ row }">
           <el-button type="primary" size="small" icon="User">分配角色</el-button>
-          <el-button type="primary" size="small" icon="Edit">编辑</el-button>
+          <el-button type="primary" size="small" icon="Edit" @click="updateUser(row)">
+            编辑
+          </el-button>
           <el-button type="primary" size="small" icon="Delete">删除</el-button>
         </template>
       </el-table-column>
@@ -68,11 +70,38 @@
       @current-change="getHasUser"
     />
   </el-card>
+  <!-- 抽屉结构：完成添加新的用户账号｜更新已有的账号信息 -->
+  <el-drawer v-model="drawer" direction="rtl">
+    <!-- 头部标题：文字内容是动态的 -->
+    <template #header>
+      <h4>添加用户</h4>
+    </template>
+    <!-- 主体部分 -->
+    <template #default>
+      <el-form>
+        <el-form-item label="用户姓名">
+          <el-input placeholder="请输入用户姓名"></el-input>
+        </el-form-item>
+        <el-form-item label="用户昵称">
+          <el-input placeholder="请输入用户昵称"></el-input>
+        </el-form-item>
+        <el-form-item label="用户密码">
+          <el-input placeholder="请输入用户密码"></el-input>
+        </el-form-item>
+      </el-form>
+    </template>
+    <template #footer>
+      <div style="flex: auto">
+        <el-button>取消</el-button>
+        <el-button type="primary">确定</el-button>
+      </div>
+    </template>
+  </el-drawer>
 </template>
 <script lang="ts" setup name="User">
 import { ref, onMounted } from 'vue'
 import { reqUserList } from '@/api/acl/user'
-import type { Records, UserResponseData } from '@/api/acl/user/type'
+import type { Records, User, UserResponseData } from '@/api/acl/user/type'
 // 默认页码
 let pageNo = ref<number>(1)
 // 一页展示几条数据
@@ -81,6 +110,9 @@ let pageSize = ref<number>(5)
 let userArr = ref<Records>([])
 // 用户总个数
 let total = ref<number>(0)
+// 抽屉显示与隐藏
+let drawer = ref<boolean>(false)
+
 // 获取全部已有的用户信息
 const getHasUser = async (pager = 1) => {
   //收集当前的页码
@@ -97,6 +129,19 @@ const getHasUser = async (pager = 1) => {
 const handleSizeChange = () => {
   getHasUser()
 }
+
+// 添加用户按钮的回调
+const addUser = () => {
+  // 显示抽屉
+  drawer.value = true
+}
+
+// 更新已有的用户按钮回调
+// row即为已有的用户信息
+const updateUser = (row: User) => {
+  drawer.value = true
+}
+
 onMounted(() => {
   getHasUser()
 })
