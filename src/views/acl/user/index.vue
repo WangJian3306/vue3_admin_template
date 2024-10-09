@@ -50,7 +50,9 @@
       ></el-table-column>
       <el-table-column label="操作" width="300px" align="center">
         <template v-slot="{ row }">
-          <el-button type="primary" size="small" icon="User">分配角色</el-button>
+          <el-button type="primary" size="small" icon="User" @click="setRole(row)">
+            分配角色
+          </el-button>
           <el-button type="primary" size="small" icon="Edit" @click="updateUser(row)">
             编辑
           </el-button>
@@ -97,6 +99,40 @@
       </div>
     </template>
   </el-drawer>
+  <!-- 抽屉结构：用于某一个已有的账号进行职位分配 -->
+  <el-drawer v-model="drawer1">
+    <template #header>
+      <h4>分配角色</h4>
+    </template>
+    <template #default>
+      <el-form>
+        <el-form-item label="用户姓名">
+          <el-input v-model="userParams.username" :disabled="true"></el-input>
+        </el-form-item>
+        <el-form-item label="角色列表">
+          <el-checkbox
+            v-model="checkAll"
+            :indeterminate="isIndeterminate"
+            @change="handleCheckAllChange"
+          >
+            全选
+          </el-checkbox>
+          <!-- 显示角色复选框 -->
+          <el-checkbox-group v-model="checkedRole" @change="handleCheckedRoleChange">
+            <el-checkbox v-for="(role, index) in allRole" :key="index" :value="role">
+              {{ role }}
+            </el-checkbox>
+          </el-checkbox-group>
+        </el-form-item>
+      </el-form>
+    </template>
+    <template #footer>
+      <div style="flex: auto">
+        <el-button @click="cancelClick">取消</el-button>
+        <el-button type="primary" @click="confirmClick">确定</el-button>
+      </div>
+    </template>
+  </el-drawer>
 </template>
 <script lang="ts" setup name="User">
 import { ref, onMounted, reactive, nextTick } from 'vue'
@@ -121,6 +157,8 @@ let userParams = reactive<User>({
 })
 // 获取 form 组件实例
 let formRef = ref<any>()
+// 控制分配角色抽屉显示与隐藏
+let drawer1 = ref<boolean>(false)
 
 // 获取全部已有的用户信息
 const getHasUser = async (pager = 1) => {
@@ -190,7 +228,7 @@ const save = async () => {
 
     // 获取最新全部账号信息
     // getHasUser(userParams.id ? pageNo.value : 1)
-    
+
     // 浏览器自动刷新一次
     window.location.reload()
   } else {
@@ -245,6 +283,32 @@ const rules = {
   name: [{ required: true, trigger: 'blur', validator: validatorName }],
   // 用户密码
   password: [{ required: true, trigger: 'blur', validator: validatorPassword }],
+}
+
+// 分配角色按钮回调
+const setRole = (row: User) => {
+  drawer1.value = true
+  // 存储用户信息
+  Object.assign(userParams, row)
+}
+
+// 测试复选框
+// 是否全选
+let checkAll = ref<boolean>(false)
+let allRole = ref(['销售', '前台', '财务', 'boss', '程序员', '工程师'])
+let checkedRole = ref(['销售'])
+// 设置不确定状态，仅负责样式控制
+const isIndeterminate = ref<boolean>(true)
+// 全选复选框的change事件
+const handleCheckAllChange = (val: boolean) => {
+  checkedRole.value = val ? allRole.value : []
+  isIndeterminate.value = false
+}
+// 底部复选框change事件
+const handleCheckedRoleChange = (value: string[]) => {
+  const checkedCount = value.length
+  checkAll.value = checkedCount === allRole.value.length
+  isIndeterminate.value = checkedCount > 0 && checkedCount < allRole.value.length
 }
 
 onMounted(() => {
