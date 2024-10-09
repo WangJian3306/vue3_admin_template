@@ -187,8 +187,10 @@ const save = async () => {
       type: 'success',
       message: userParams.id ? '更新成功' : '添加成功',
     })
+
     // 获取最新全部账号信息
-    getHasUser(userParams.id ? pageNo.value : 1)
+    // getHasUser(userParams.id ? pageNo.value : 1)
+    
     // 浏览器自动刷新一次
     window.location.reload()
   } else {
