@@ -74,7 +74,7 @@
   <el-drawer v-model="drawer" direction="rtl">
     <!-- 头部标题：文字内容是动态的 -->
     <template #header>
-      <h4>添加用户</h4>
+      <h4>{{ userParams.id ? '更新用户' : '添加用户' }}</h4>
     </template>
     <!-- 主体部分 -->
     <template #default>
@@ -85,7 +85,7 @@
         <el-form-item label="用户昵称" prop="name">
           <el-input placeholder="请输入用户昵称" v-model="userParams.name"></el-input>
         </el-form-item>
-        <el-form-item label="用户密码" prop="password">
+        <el-form-item label="用户密码" prop="password" v-if="!userParams.id">
           <el-input placeholder="请输入用户密码" v-model="userParams.password"></el-input>
         </el-form-item>
       </el-form>
@@ -145,6 +145,7 @@ const addUser = () => {
   drawer.value = true
   // 清空数据
   Object.assign(userParams, {
+    id: 0,
     username: '',
     name: '',
     password: '',
@@ -162,6 +163,14 @@ const addUser = () => {
 // row即为已有的用户信息
 const updateUser = (row: User) => {
   drawer.value = true
+  // 收集已有的账号信息
+  Object.assign(userParams, row)
+
+  // 清除上一次的错误提示信息
+  nextTick(() => {
+    formRef.value.clearValidate('username')
+    formRef.value.clearValidate('name')
+  })
 }
 
 // 保存按钮回调
@@ -179,7 +188,9 @@ const save = async () => {
       message: userParams.id ? '更新成功' : '添加成功',
     })
     // 获取最新全部账号信息
-    getHasUser()
+    getHasUser(userParams.id ? pageNo.value : 1)
+    // 浏览器自动刷新一次
+    window.location.reload()
   } else {
     drawer.value = false
     ElMessage({
