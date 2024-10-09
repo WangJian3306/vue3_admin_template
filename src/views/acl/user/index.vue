@@ -78,14 +78,14 @@
     </template>
     <!-- 主体部分 -->
     <template #default>
-      <el-form>
-        <el-form-item label="用户姓名">
+      <el-form :model="userParams" :rules="rules" ref="formRef">
+        <el-form-item label="用户姓名" prop="username">
           <el-input placeholder="请输入用户姓名" v-model="userParams.username"></el-input>
         </el-form-item>
-        <el-form-item label="用户昵称">
+        <el-form-item label="用户昵称" prop="name">
           <el-input placeholder="请输入用户昵称" v-model="userParams.name"></el-input>
         </el-form-item>
-        <el-form-item label="用户密码">
+        <el-form-item label="用户密码" prop="password">
           <el-input placeholder="请输入用户密码" v-model="userParams.password"></el-input>
         </el-form-item>
       </el-form>
@@ -99,7 +99,7 @@
   </el-drawer>
 </template>
 <script lang="ts" setup name="User">
-import { ref, onMounted, reactive } from 'vue'
+import { ref, onMounted, reactive, nextTick } from 'vue'
 import { reqAddOrUpdateUser, reqUserList } from '@/api/acl/user'
 import type { Records, User, UserResponseData } from '@/api/acl/user/type'
 import { ElMessage } from 'element-plus'
@@ -119,6 +119,8 @@ let userParams = reactive<User>({
   name: '',
   password: '',
 })
+// 获取 form 组件实例
+let formRef = ref<any>()
 
 // 获取全部已有的用户信息
 const getHasUser = async (pager = 1) => {
@@ -147,6 +149,13 @@ const addUser = () => {
     name: '',
     password: '',
   })
+
+  // 清除上一次的错误提示信息
+  nextTick(() => {
+    formRef.value.clearValidate('username')
+    formRef.value.clearValidate('name')
+    formRef.value.clearValidate('password')
+  })
 }
 
 // 更新已有的用户按钮回调
@@ -157,6 +166,9 @@ const updateUser = (row: User) => {
 
 // 保存按钮回调
 const save = async () => {
+  // form 表单校验
+  await formRef.value.validate()
+
   // 确定按钮：添加新的用户或者更新已有的账号信息
   const result: any = await reqAddOrUpdateUser(userParams)
   // 添加或者更新成功
@@ -180,6 +192,46 @@ const save = async () => {
 // 取消按钮回调
 const cancel = () => {
   drawer.value = false
+}
+
+// 校验用户名字回调函数
+const validatorUsername = (rule: any, value: any, callBack: any) => {
+  // 用户名字｜昵称，长度至少五位
+  if (value.trim().length >= 5) {
+    callBack()
+  } else {
+    callBack(new Error('用户名字至少五位'))
+  }
+}
+
+// 校验用户名字回调函数
+const validatorName = (rule: any, value: any, callBack: any) => {
+  // 用户名字｜昵称，长度至少五位
+  if (value.trim().length >= 5) {
+    callBack()
+  } else {
+    callBack(new Error('用户昵称至少五位'))
+  }
+}
+
+// 校验用户名字回调函数
+const validatorPassword = (rule: any, value: any, callBack: any) => {
+  // 用户名字｜昵称，长度至少五位
+  if (value.trim().length >= 6) {
+    callBack()
+  } else {
+    callBack(new Error('用户密码至少六位'))
+  }
+}
+
+// 表单校验的规则对象
+const rules = {
+  // 用户名字
+  username: [{ required: true, trigger: 'blur', validator: validatorUsername }],
+  // 用户昵称
+  name: [{ required: true, trigger: 'blur', validator: validatorName }],
+  // 用户密码
+  password: [{ required: true, trigger: 'blur', validator: validatorPassword }],
 }
 
 onMounted(() => {
