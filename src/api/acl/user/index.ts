@@ -20,8 +20,8 @@ enum API {
 }
 
 // 获取用户接口
-export const reqUserList = (page: number, limit: number) =>
-  request.get<any, UserResponseData>(API.ALLUSER_URL + `${page}/${limit}`)
+export const reqUserList = (page: number, limit: number, username: string) =>
+  request.get<any, UserResponseData>(API.ALLUSER_URL + `${page}/${limit}?username=${username}`)
 
 // 添加用户与更新用户接口
 export const reqAddOrUpdateUser = (data: User) => {

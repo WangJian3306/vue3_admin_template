@@ -3,11 +3,18 @@
     <el-card style="height: 80px">
       <el-form :inline="true" class="form">
         <el-form-item label="用户名：">
-          <el-input placeholder="请输入搜索用户名"></el-input>
+          <el-input placeholder="请输入搜索用户名" v-model="keyword"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" size="default">搜索</el-button>
-          <el-button type="primary" size="default">重置</el-button>
+          <el-button
+            type="primary"
+            size="default"
+            :disabled="keyword ? false : true"
+            @click="search"
+          >
+            搜索
+          </el-button>
+          <el-button type="primary" size="default" @click="reset">重置</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -152,6 +159,7 @@
   </div>
 </template>
 <script lang="ts" setup name="User">
+import useLayOutSettingStore from '@/store/modules/tabbar'
 import { ref, onMounted, reactive, nextTick } from 'vue'
 import {
   reqAddOrUpdateUser,
@@ -200,12 +208,16 @@ let checkAll = ref<boolean>(false)
 const isIndeterminate = ref<boolean>(true)
 // 存储批量删除用户的ID
 let selectIdArr = ref<User[]>([])
+// 收集用户输入关键字
+let keyword = ref<string>('')
+// 获取tabber小仓库
+let settingStore = useLayOutSettingStore()
 
 // 获取全部已有的用户信息
 const getHasUser = async (pager = 1) => {
   //收集当前的页码
   pageNo.value = pager
-  const result: UserResponseData = await reqUserList(pageNo.value, pageSize.value)
+  const result: UserResponseData = await reqUserList(pageNo.value, pageSize.value, keyword.value)
   if (result.code === 200) {
     total.value = result.data.total
     userArr.value = result.data.records
@@ -411,6 +423,19 @@ const deleteSelectUser = async () => {
     })
     getHasUser(userArr.value.length > 0 ? pageNo.value : pageNo.value - 1)
   }
+}
+
+// 搜索按钮的回调
+const search = () => {
+  // 根据关键字获取响应的用户数据
+  getHasUser()
+  // 清空关键字
+  keyword.value = ''
+}
+
+// 重置按钮
+const reset = () => {
+  settingStore.refresh = !settingStore.refresh
 }
 
 onMounted(() => {
