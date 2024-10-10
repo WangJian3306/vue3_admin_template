@@ -120,7 +120,7 @@
           <!-- 显示角色复选框 -->
           <el-checkbox-group v-model="checkedRole" @change="handleCheckedRoleChange">
             <el-checkbox v-for="(role, index) in allRole" :key="index" :value="role">
-              {{ role }}
+              {{ role.roleName }}
             </el-checkbox>
           </el-checkbox-group>
         </el-form-item>
@@ -128,7 +128,7 @@
     </template>
     <template #footer>
       <div style="flex: auto">
-        <el-button @click="cancelClick">取消</el-button>
+        <el-button @click="drawer1 = false">取消</el-button>
         <el-button type="primary" @click="confirmClick">确定</el-button>
       </div>
     </template>
@@ -136,8 +136,15 @@
 </template>
 <script lang="ts" setup name="User">
 import { ref, onMounted, reactive, nextTick } from 'vue'
-import { reqAddOrUpdateUser, reqUserList } from '@/api/acl/user'
-import type { Records, User, UserResponseData } from '@/api/acl/user/type'
+import { reqAddOrUpdateUser, reqAllRole, reqSetUserRole, reqUserList } from '@/api/acl/user'
+import type {
+  AllRole,
+  AllRoleResponseData,
+  Records,
+  SetRoleData,
+  User,
+  UserResponseData,
+} from '@/api/acl/user/type'
 import { ElMessage } from 'element-plus'
 // 默认页码
 let pageNo = ref<number>(1)
@@ -159,13 +166,20 @@ let userParams = reactive<User>({
 let formRef = ref<any>()
 // 控制分配角色抽屉显示与隐藏
 let drawer1 = ref<boolean>(false)
+// 存储全部角色数据
+let allRole = ref<AllRole>([])
+// 用户已有角色数据
+let checkedRole = ref<AllRole>([])
+// 是否全选
+let checkAll = ref<boolean>(false)
+// 设置复选框不确定状态，仅负责样式控制
+const isIndeterminate = ref<boolean>(true)
 
 // 获取全部已有的用户信息
 const getHasUser = async (pager = 1) => {
   //收集当前的页码
   pageNo.value = pager
   const result: UserResponseData = await reqUserList(pageNo.value, pageSize.value)
-  console.log(result)
   if (result.code === 200) {
     total.value = result.data.total
     userArr.value = result.data.records
@@ -286,19 +300,25 @@ const rules = {
 }
 
 // 分配角色按钮回调
-const setRole = (row: User) => {
-  drawer1.value = true
+const setRole = async (row: User) => {
   // 存储用户信息
   Object.assign(userParams, row)
+  // 获取角色信息
+  const result: AllRoleResponseData = await reqAllRole(userParams.id as number)
+  if (result.code == 200) {
+    // 全部角色
+    allRole.value = result.data.allRolesList
+    // 已有角色
+    checkedRole.value = result.data.assignRoles
+    // 显示抽屉
+    drawer1.value = true
+    // 全选复选框状态
+    checkAll.value = allRole.value.length == checkedRole.value.length
+    isIndeterminate.value =
+      checkedRole.value.length > 0 && checkedRole.value.length < allRole.value.length
+  }
 }
 
-// 测试复选框
-// 是否全选
-let checkAll = ref<boolean>(false)
-let allRole = ref(['销售', '前台', '财务', 'boss', '程序员', '工程师'])
-let checkedRole = ref(['销售'])
-// 设置不确定状态，仅负责样式控制
-const isIndeterminate = ref<boolean>(true)
 // 全选复选框的change事件
 const handleCheckAllChange = (val: boolean) => {
   checkedRole.value = val ? allRole.value : []
@@ -309,6 +329,27 @@ const handleCheckedRoleChange = (value: string[]) => {
   const checkedCount = value.length
   checkAll.value = checkedCount === allRole.value.length
   isIndeterminate.value = checkedCount > 0 && checkedCount < allRole.value.length
+}
+
+// 分配角色确定按钮回调
+const confirmClick = async () => {
+  // 收集参数
+  let data: SetRoleData = {
+    userId: userParams.id as number,
+    roleIdList: checkedRole.value.map((item) => {
+      return item.id as number
+    }),
+  }
+  const result: any = await reqSetUserRole(data)
+  if (result.code == 200) {
+    ElMessage({
+      type: 'success',
+      message: '分配角色成功',
+    })
+    drawer1.value = false
+    // 获取更新完毕用户信息，根系完毕留在当前页
+    getHasUser(pageNo.value)
+  }
 }
 
 onMounted(() => {
