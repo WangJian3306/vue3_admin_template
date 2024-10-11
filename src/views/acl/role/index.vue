@@ -19,7 +19,7 @@
       </el-form>
     </el-card>
     <el-card style="margin: 10px 0px">
-      <el-button type="primary" size="default" icon="Plus">添加角色</el-button>
+      <el-button type="primary" size="default" icon="Plus" @click="addRole">添加角色</el-button>
       <el-table border style="margin: 10px 0px" :data="allRole">
         <el-table-column type="index" align="center" label="#"></el-table-column>
         <el-table-column align="center" label="id" prop="id"></el-table-column>
@@ -45,7 +45,9 @@
           <!-- row：已有的角色对象 -->
           <template v-slot="{ row }">
             <el-button type="primary" size="small" icon="User">分配权限</el-button>
-            <el-button type="primary" size="small" icon="User">编辑</el-button>
+            <el-button type="primary" size="small" icon="User" @click="updateRole(row)">
+              编辑
+            </el-button>
             <el-button type="primary" size="small" icon="User">删除</el-button>
           </template>
         </el-table-column>
@@ -61,11 +63,23 @@
         @current-change="getHasRole"
       />
     </el-card>
+    <!-- 添加角色与更新已有角色 -->
+    <el-dialog v-model="dialogVisite" title="添加角色">
+      <el-form>
+        <el-form-item label="角色名称">
+          <el-input placeholder="请输入角色名称"></el-input>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button type="primary" size="default" @click="dialogVisite = false">取消</el-button>
+        <el-button type="primary" size="default">确定</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 <script lang="ts" setup name="Role">
 import { reqAllRoleList } from '@/api/acl/role'
-import type { Records, RoleResponseData } from '@/api/acl/role/type'
+import type { Records, RoleData, RoleResponseData } from '@/api/acl/role/type'
 import { ref, onMounted } from 'vue'
 // 当前页码
 let pageNo = ref<number>(1)
@@ -77,6 +91,8 @@ let keyword = ref<string>('')
 let allRole = ref<Records>([])
 // 角色总个数
 let total = ref<number>(0)
+// 控制对话框的显示与隐藏
+let dialogVisite = ref<boolean>(false)
 
 // 组件挂载完毕
 onMounted(() => {
@@ -110,6 +126,16 @@ const search = () => {
 const reset = () => {
   keyword.value = ''
   getHasRole()
+}
+
+// 添加角色
+const addRole = () => {
+  dialogVisite.value = true
+}
+
+// 更新角色
+const updateRole = (row: RoleData) => {
+  dialogVisite.value = true
 }
 </script>
 <style scoped>
