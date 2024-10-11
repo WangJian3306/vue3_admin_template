@@ -10,7 +10,7 @@ export interface RoleData {
   createTime?: string
   updateTime?: string
   roleName: string
-  remark: string
+  remark?: string
 }
 
 // 全部角色的数组ts类型

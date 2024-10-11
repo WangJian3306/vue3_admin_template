@@ -64,23 +64,24 @@
       />
     </el-card>
     <!-- 添加角色与更新已有角色 -->
-    <el-dialog v-model="dialogVisite" title="添加角色">
-      <el-form>
-        <el-form-item label="角色名称">
-          <el-input placeholder="请输入角色名称"></el-input>
+    <el-dialog v-model="dialogVisite" :title="roleParams.id ? '更新角色' : '添加角色'">
+      <el-form :model="roleParams" :rules="rules" ref="form">
+        <el-form-item label="角色名称" prop="roleName">
+          <el-input placeholder="请输入角色名称" v-model="roleParams.roleName"></el-input>
         </el-form-item>
       </el-form>
       <template #footer>
         <el-button type="primary" size="default" @click="dialogVisite = false">取消</el-button>
-        <el-button type="primary" size="default">确定</el-button>
+        <el-button type="primary" size="default" @click="save">确定</el-button>
       </template>
     </el-dialog>
   </div>
 </template>
 <script lang="ts" setup name="Role">
-import { reqAllRoleList } from '@/api/acl/role'
+import { reqAddOrUpdateRole, reqAllRoleList } from '@/api/acl/role'
 import type { Records, RoleData, RoleResponseData } from '@/api/acl/role/type'
-import { ref, onMounted } from 'vue'
+import { ElMessage, FormInstance } from 'element-plus'
+import { ref, onMounted, reactive, nextTick } from 'vue'
 // 当前页码
 let pageNo = ref<number>(1)
 // 一页展示几条数据
@@ -93,6 +94,12 @@ let allRole = ref<Records>([])
 let total = ref<number>(0)
 // 控制对话框的显示与隐藏
 let dialogVisite = ref<boolean>(false)
+// 收集角色数据
+let roleParams = reactive<RoleData>({
+  roleName: '',
+})
+// 获取form组件实例
+let form = ref<FormInstance>()
 
 // 组件挂载完毕
 onMounted(() => {
@@ -131,11 +138,54 @@ const reset = () => {
 // 添加角色
 const addRole = () => {
   dialogVisite.value = true
+  // 清空数据
+  Object.assign(roleParams, {
+    id: 0,
+    roleName: '',
+  })
+  // 清空上一次表单校验结果
+  nextTick(() => {
+    form.value?.clearValidate('roleName')
+  })
 }
 
 // 更新角色
 const updateRole = (row: RoleData) => {
   dialogVisite.value = true
+  // 存储已有角色数据（带有ID的）
+  Object.assign(roleParams, row)
+  // 清空上一次表单校验结果
+  nextTick(() => {
+    form.value?.clearValidate('roleName')
+  })
+}
+// 自定义校验规则
+const validatorRoleName = (rule: any, value: any, callBack: any) => {
+  if (value.trim().length >= 2) {
+    callBack()
+  } else {
+    callBack(new Error('角色名称至少两位'))
+  }
+}
+// 角色名称校验规则
+const rules = {
+  roleName: [{ required: true, trigger: 'blur', validator: validatorRoleName }],
+}
+
+// 确定按钮回调
+const save = async () => {
+  // 表单校验结果，结果通过再发请求，结果没有通过不发请求
+  await form.value?.validate()
+  // 添加或更新角色
+  let result = await reqAddOrUpdateRole(roleParams)
+  if (result.code == 200) {
+    ElMessage({
+      type: 'success',
+      message: roleParams.id ? '更新成功' : '添加成功',
+    })
+    getHasRole(roleParams.id ? pageNo.value : 1)
+    dialogVisite.value = false
+  }
 }
 </script>
 <style scoped>
