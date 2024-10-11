@@ -122,7 +122,7 @@
         </div>
       </template>
     </el-drawer>
-    <!-- 抽屉结构：用于某一个已有的账号进行职位分配 -->
+    <!-- 抽屉结构：用于某一个已有的账号进行角色分配 -->
     <el-drawer v-model="drawer1">
       <template #header>
         <h4>分配角色</h4>

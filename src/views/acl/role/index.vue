@@ -1,43 +1,116 @@
 <template>
-  <el-card style="height: 80px">
-    <el-form :inline="true" class="form">
-      <el-form-item label="角色搜索">
-        <el-input placeholder="请输入搜索角色名称"></el-input>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" size="default">搜索</el-button>
-        <el-button type="primary" size="default">重置</el-button>
-      </el-form-item>
-    </el-form>
-  </el-card>
-  <el-card style="margin: 10px 0px">
-    <el-button type="primary" size="default" icon="Plus">添加角色</el-button>
-    <el-table border style="margin: 10px 0px">
-      <el-table-column type="index" align="center" label="#"></el-table-column>
-      <el-table-column align="center" label="id"></el-table-column>
-      <el-table-column align="center" label="角色名称" show-overflow-tooltip></el-table-column>
-      <el-table-column align="center" label="创建时间" show-overflow-tooltip></el-table-column>
-      <el-table-column align="center" label="更新时间" show-overflow-tooltip></el-table-column>
-      <el-table-column align="center" label="操作" width="260px"></el-table-column>
-    </el-table>
-    <el-pagination
-      v-model:current-page="pageNo"
-      v-model:page-size="pageSize"
-      :page-sizes="[10, 20, 30, 40]"
-      :background="true"
-      layout=" prev, pager, next, jumper, ->, sizes, total,"
-      :total="400"
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-    />
-  </el-card>
+  <div>
+    <el-card style="height: 80px">
+      <el-form :inline="true" class="form">
+        <el-form-item label="角色搜索">
+          <el-input placeholder="请输入搜索角色名称" v-model="keyword"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button
+            type="primary"
+            size="default"
+            :disabled="keyword ? false : true"
+            @click="search"
+          >
+            搜索
+          </el-button>
+          <el-button type="primary" size="default" @click="reset">重置</el-button>
+        </el-form-item>
+      </el-form>
+    </el-card>
+    <el-card style="margin: 10px 0px">
+      <el-button type="primary" size="default" icon="Plus">添加角色</el-button>
+      <el-table border style="margin: 10px 0px" :data="allRole">
+        <el-table-column type="index" align="center" label="#"></el-table-column>
+        <el-table-column align="center" label="id" prop="id"></el-table-column>
+        <el-table-column
+          align="center"
+          label="角色名称"
+          show-overflow-tooltip
+          prop="roleName"
+        ></el-table-column>
+        <el-table-column
+          align="center"
+          label="创建时间"
+          show-overflow-tooltip
+          prop="createTime"
+        ></el-table-column>
+        <el-table-column
+          align="center"
+          label="更新时间"
+          show-overflow-tooltip
+          prop="updateTime"
+        ></el-table-column>
+        <el-table-column align="center" label="操作" width="300px">
+          <!-- row：已有的角色对象 -->
+          <template v-slot="{ row }">
+            <el-button type="primary" size="small" icon="User">分配权限</el-button>
+            <el-button type="primary" size="small" icon="User">编辑</el-button>
+            <el-button type="primary" size="small" icon="User">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-pagination
+        v-model:current-page="pageNo"
+        v-model:page-size="pageSize"
+        :page-sizes="[10, 20, 30, 40]"
+        :background="true"
+        layout=" prev, pager, next, jumper, ->, sizes, total"
+        :total="total"
+        @size-change="handleSizeChange"
+        @current-change="getHasRole"
+      />
+    </el-card>
+  </div>
 </template>
 <script lang="ts" setup name="Role">
-import { ref } from 'vue'
+import { reqAllRoleList } from '@/api/acl/role'
+import type { Records, RoleResponseData } from '@/api/acl/role/type'
+import { ref, onMounted } from 'vue'
 // 当前页码
 let pageNo = ref<number>(1)
 // 一页展示几条数据
 let pageSize = ref<number>(10)
+// 角色搜索关键字
+let keyword = ref<string>('')
+// 存储全部已有角色
+let allRole = ref<Records>([])
+// 角色总个数
+let total = ref<number>(0)
+
+// 组件挂载完毕
+onMounted(() => {
+  // 获取角色请求
+  getHasRole()
+})
+
+// 获取已有角色｜分页器页码发生变化的回调
+const getHasRole = async (pager = 1) => {
+  // 修改当前页码
+  pageNo.value = pager
+  const result: RoleResponseData = await reqAllRoleList(pageNo.value, pageSize.value, keyword.value)
+  if (result.code == 200) {
+    total.value = result.data.total
+    allRole.value = result.data.records
+  }
+}
+
+// 下拉菜单的回调
+const handleSizeChange = () => {
+  getHasRole()
+}
+
+// 搜索
+const search = () => {
+  getHasRole()
+  keyword.value = ''
+}
+
+// 重置(和老师的实现方法不一样，这种方式更简洁)
+const reset = () => {
+  keyword.value = ''
+  getHasRole()
+}
 </script>
 <style scoped>
 .form {

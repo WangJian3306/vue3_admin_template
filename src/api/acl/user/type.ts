@@ -43,7 +43,7 @@ export interface Role {
 // 所有角色列表
 export type AllRole = Role[]
 
-// 获取全部职位接口返回数据ts类型
+// 获取全部角色接口返回数据ts类型
 export interface AllRoleResponseData extends ResponseData {
   data: {
     assignRoles: AllRole
