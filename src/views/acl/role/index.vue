@@ -44,7 +44,9 @@
         <el-table-column align="center" label="操作" width="300px">
           <!-- row：已有的角色对象 -->
           <template v-slot="{ row }">
-            <el-button type="primary" size="small" icon="User">分配权限</el-button>
+            <el-button type="primary" size="small" icon="User" @click="setPermission(row)">
+              分配权限
+            </el-button>
             <el-button type="primary" size="small" icon="User" @click="updateRole(row)">
               编辑
             </el-button>
@@ -75,12 +77,49 @@
         <el-button type="primary" size="default" @click="save">确定</el-button>
       </template>
     </el-dialog>
+    <!-- 抽屉组件：分配角色的菜单权限与按钮权限 -->
+    <el-drawer v-model="drawer">
+      <template #header>
+        <h4>分配菜单与按钮权限</h4>
+      </template>
+      <template #default>
+        <!-- 树形控件 -->
+        <el-tree
+          style="max-width: 600px"
+          :data="menuArr"
+          show-checkbox
+          node-key="id"
+          :default-expand-all="true"
+          :default-checked-keys="selectArr"
+          :props="defaultProps"
+          ref="tree"
+        />
+      </template>
+      <template #footer>
+        <div style="flex: auto">
+          <el-button @click="drawer = false">取消</el-button>
+          <el-button type="primary" @click="confirmClick">确定</el-button>
+        </div>
+      </template>
+    </el-drawer>
   </div>
 </template>
 <script lang="ts" setup name="Role">
-import { reqAddOrUpdateRole, reqAllRoleList } from '@/api/acl/role'
-import type { Records, RoleData, RoleResponseData } from '@/api/acl/role/type'
-import { ElMessage, FormInstance } from 'element-plus'
+import {
+  reqAddOrUpdateRole,
+  reqAllMenuList,
+  reqAllRoleList,
+  reqSetPermission,
+} from '@/api/acl/role'
+import type {
+  MenuList,
+  MenuResponseData,
+  Records,
+  RoleData,
+  RoleResponseData,
+} from '@/api/acl/role/type'
+import { ElMessage, type FormInstance, type TreeInstance } from 'element-plus'
+import type { TreeKey } from 'element-plus/es/components/tree/src/tree.type.mjs'
 import { ref, onMounted, reactive, nextTick } from 'vue'
 // 当前页码
 let pageNo = ref<number>(1)
@@ -100,6 +139,14 @@ let roleParams = reactive<RoleData>({
 })
 // 获取form组件实例
 let form = ref<FormInstance>()
+// 控制抽屉显示与隐藏
+let drawer = ref<boolean>(false)
+// 存储用户权限数据
+let menuArr = ref<MenuList>([])
+// 存储勾选了节点的id
+let selectArr = ref<number[]>([])
+// 获取tree 组件实例
+let tree = ref<TreeInstance>()
 
 // 组件挂载完毕
 onMounted(() => {
@@ -185,6 +232,69 @@ const save = async () => {
     })
     getHasRole(roleParams.id ? pageNo.value : 1)
     dialogVisite.value = false
+  }
+}
+
+// 分配权限回调
+// row 已有角色数据
+const setPermission = async (row: RoleData) => {
+  // 显示抽屉
+  drawer.value = true
+  // 收集当前要分配权限的角色数据
+  Object.assign(roleParams, row)
+  // 根据角色id获取权限数据
+  const result: MenuResponseData = await reqAllMenuList(roleParams.id as number)
+  if (result.code == 200) {
+    menuArr.value = result.data
+    selectArr.value = filterSelectArr(menuArr.value, [])
+  }
+}
+
+// 树形控件数据
+const defaultProps = {
+  children: 'children',
+  label: 'name',
+}
+
+const filterSelectArr = (allData: any, initArr: any) => {
+  allData.forEach((item: any) => {
+    if (item.select && item.level == 4) {
+      initArr.push(item.id)
+    }
+    if (item.children && item.children.length > 0) {
+      filterSelectArr(item.children, initArr)
+    }
+  })
+
+  return initArr
+}
+
+// 抽屉确定按钮回调
+const confirmClick = async () => {
+  // 角色ID
+  const roleId = roleParams.id as number
+  // 选中节点的ID
+  let checkedKeys = tree.value?.getCheckedKeys()
+  // 半选的id
+  let halfCheckedKeys = tree.value?.getHalfCheckedKeys()
+  let permissionId = checkedKeys?.concat(halfCheckedKeys as TreeKey[])
+  // 下发权限
+  const result = await reqSetPermission(roleId, permissionId as number[])
+  if (result.code == 200) {
+    // 抽屉关闭
+    drawer.value = false
+    ElMessage({
+      type: 'success',
+      message: '分配权限成功',
+    })
+    // getHasRole()
+    // 页面刷新
+    window.location.reload()
+  } else {
+    ElMessage({
+      type: 'error',
+      message: '分配权限失败',
+    })
   }
 }
 </script>
