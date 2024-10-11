@@ -47,10 +47,19 @@
             <el-button type="primary" size="small" icon="User" @click="setPermission(row)">
               分配权限
             </el-button>
-            <el-button type="primary" size="small" icon="User" @click="updateRole(row)">
+            <el-button type="primary" size="small" icon="Edit" @click="updateRole(row)">
               编辑
             </el-button>
-            <el-button type="primary" size="small" icon="User">删除</el-button>
+
+            <el-popconfirm
+              :title="`确定删除角色：${row.roleName}?`"
+              width="260px"
+              @confirm="removeRole(row.id)"
+            >
+              <template #reference>
+                <el-button type="primary" size="small" icon="Delete">删除</el-button>
+              </template>
+            </el-popconfirm>
           </template>
         </el-table-column>
       </el-table>
@@ -109,6 +118,7 @@ import {
   reqAddOrUpdateRole,
   reqAllMenuList,
   reqAllRoleList,
+  reqRemoveRole,
   reqSetPermission,
 } from '@/api/acl/role'
 import type {
@@ -294,6 +304,23 @@ const confirmClick = async () => {
     ElMessage({
       type: 'error',
       message: '分配权限失败',
+    })
+  }
+}
+
+// 删除已有角色
+const removeRole = async (roleId: number) => {
+  const result = await reqRemoveRole(roleId)
+  if (result.code == 200) {
+    ElMessage({
+      type: 'success',
+      message: '删除角色成功',
+    })
+    getHasRole(allRole.value.length > 0 ? pageNo.value : pageNo.value - 1)
+  } else {
+    ElMessage({
+      type: 'error',
+      message: '删除角色失败',
     })
   }
 }
