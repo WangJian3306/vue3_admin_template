@@ -1,7 +1,28 @@
 <template>
   <el-button size="small" icon="Refresh" circle @click="updateRefresh"></el-button>
   <el-button size="small" icon="FullScreen" circle @click="fullScreen"></el-button>
-  <el-button size="small" icon="Setting" circle></el-button>
+
+  <el-popover placement="bottom" title="主题设置" :width="300" trigger="hover">
+    <!-- 表单元素 -->
+    <el-form>
+      <el-form-item label="主题颜色">
+        <el-color-picker v-model="color" show-alpha :predefine="predefineColors" size="small" />
+      </el-form-item>
+      <el-form-item label="暗黑模式">
+        <el-switch
+          @change="changeDark"
+          v-model="dark"
+          size="small"
+          inline-prompt
+          active-icon="MoonNight"
+          inactive-icon="Sunny"
+        />
+      </el-form-item>
+    </el-form>
+    <template #reference>
+      <el-button size="small" icon="Setting" circle></el-button>
+    </template>
+  </el-popover>
   <img
     :src="userStore.avatar"
     style="width: 24px; height: 24px; margin: 0 10px; border-radius: 50%"
@@ -22,6 +43,7 @@
   </el-dropdown>
 </template>
 <script lang="ts" setup name="Setting">
+import { ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 // 获取layout的小仓库
 import useLayOutSettingStore from '@/store/modules/tabbar'
@@ -33,6 +55,8 @@ const userStore = useUserStore()
 const $router = useRouter()
 // 获取路由对象
 const $route = useRoute()
+// 收集开关的数据
+let dark = ref<boolean>(false)
 
 // 刷新按钮点击回调
 const updateRefresh = () => {
@@ -60,6 +84,33 @@ const logout = async () => {
   await userStore.userLogout()
   // 跳转到登录页面
   $router.push({ path: '/login', query: { redirect: $route.path } })
+}
+
+// 颜色组件数据
+const color = ref('rgba(255, 69, 0, 0.68)')
+const predefineColors = ref([
+  '#ff4500',
+  '#ff8c00',
+  '#ffd700',
+  '#90ee90',
+  '#00ced1',
+  '#1e90ff',
+  '#c71585',
+  'rgba(255, 69, 0, 0.68)',
+  'rgb(255, 120, 0)',
+  'hsv(51, 100, 98)',
+  'hsva(120, 40, 94, 0.5)',
+  'hsl(181, 100%, 37%)',
+  'hsla(209, 100%, 56%, 0.73)',
+  '#c7158577',
+])
+
+// 暗黑模式切换
+const changeDark = () => {
+  // 获取 HTML 根节点
+  let html = document.documentElement
+  // 判断HTML标间是否有类名dark
+  dark.value ? (html.className = 'dark') : (html.className = '')
 }
 </script>
 <style scoped></style>
