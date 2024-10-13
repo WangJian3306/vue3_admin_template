@@ -6,7 +6,15 @@
     <!-- 表单元素 -->
     <el-form>
       <el-form-item label="主题颜色">
-        <el-color-picker v-model="color" show-alpha :predefine="predefineColors" size="small" />
+        <!-- teleported: 是否将 popover 的下拉列表渲染至 body 下，false的目的是将其渲染只 el-popover 下，防止 el-popover 自动关闭 -->
+        <el-color-picker
+          v-model="color"
+          show-alpha
+          :predefine="predefineColors"
+          size="small"
+          :teleported="false"
+          @change="setColor"
+        />
       </el-form-item>
       <el-form-item label="暗黑模式">
         <el-switch
@@ -111,6 +119,13 @@ const changeDark = () => {
   let html = document.documentElement
   // 判断HTML标间是否有类名dark
   dark.value ? (html.className = 'dark') : (html.className = '')
+}
+
+// 主题颜色设置
+const setColor = () => {
+  // 通过js修改根节点的样式属性与属性值
+  const html = document.documentElement
+  html.style.setProperty('--el-color-primary', color.value)
 }
 </script>
 <style scoped></style>
