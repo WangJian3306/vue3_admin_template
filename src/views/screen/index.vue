@@ -93,11 +93,9 @@ window.onresize = () => {
         }
         .year {
           flex: 1;
-          background-color: cyan;
         }
         .counter {
           flex: 1;
-          background-color: purple;
         }
       }
       .left {
