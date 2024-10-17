@@ -43,7 +43,9 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
         // 获取用户信息后放行
         try {
           await userStore.userInfo()
-          next()
+          // 放行
+          // 如果刷新的时候是异步路由，有可能获取到用户信息、异步路由还没有加载完毕，出险空白效果
+          next({ ...to })
         } catch (error) {
           // token 过期：获取不到用户信息了
           // 退出登录->用户相关的数据清空
