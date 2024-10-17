@@ -7,7 +7,21 @@ import type { UserState } from './type/type'
 // 引入操作本地存储的工具文件
 import { SET_TOKEN, GET_TOKEN, REMOVE_TOKEN } from '@/utils/token'
 // 引入路由（常量路由）
-import { constantRoute } from '@/router/routes'
+import { constantRoute, asyncRoute, anyRoute } from '@/router/routes'
+
+import router from '@/router'
+
+// 用于过滤当前用户需要展示的异步路由
+function filterAsyncRoute(asyncRoute:any, routes: any){
+  return asyncRoute.filter((item:any)=>{
+    if(routes.includes(item.name)){
+      if(item.children && item.children.length > 0){
+        item.children = filterAsyncRoute(item.children, routes)
+      }
+      return true;
+    }
+  })
+}
 
 // 创建用户笑常开
 const useUserStore = defineStore('User', {
@@ -47,6 +61,15 @@ const useUserStore = defineStore('User', {
       if (result.code == 200) {
         this.username = result.data.name
         this.avatar = result.data.avatar
+        // 计算当前用户需要展示的异步路由
+        const userAsyncRoute = filterAsyncRoute(asyncRoute,result.data.routes)
+        // 菜单需要的数据
+        this.menuRoutes = [...constantRoute,...userAsyncRoute,...anyRoute]
+        // 目前路由器管理的只有常量路由，用户计算完毕的异步路由和任意路由需要动态添加
+        const newRoutes = [...userAsyncRoute, ...anyRoute]
+        newRoutes.forEach((route:any)=>{
+          router.addRoute(route)
+        })
         return 'ok'
       } else {
         return Promise.reject(new Error(result.message))

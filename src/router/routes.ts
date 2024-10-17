@@ -52,6 +52,10 @@ export const constantRoute = [
       icon: 'DataAnalysis',
     },
   },
+]
+
+// 异步路由
+export const asyncRoute = [
   {
     path: '/acl',
     component: () => import('@/layout/index.vue'),
@@ -148,6 +152,10 @@ export const constantRoute = [
       },
     ],
   },
+]
+
+// 任意路由
+export const anyRoute = [
   {
     // 任意路由
     path: '/:pathMtch(.*)*',
