@@ -37,6 +37,8 @@ const useUserStore = defineStore('User', {
       menuRoutes: constantRoute as [],
       username: '',
       avatar: '',
+      // 存储当前用户是否包含某一个按钮
+      buttons: [],
     }
   },
   // 异步｜逻辑的地方
@@ -65,6 +67,7 @@ const useUserStore = defineStore('User', {
       if (result.code == 200) {
         this.username = result.data.name
         this.avatar = result.data.avatar
+        this.buttons = result.data.buttons
         // 计算当前用户需要展示的异步路由
         const userAsyncRoute = filterAsyncRoute(cloneDeep(asyncRoute), result.data.routes)
         // 菜单需要的数据
