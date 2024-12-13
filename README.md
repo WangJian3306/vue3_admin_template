@@ -1,39 +1,42 @@
-# project
+# vue3_admin_template
 
-This template should help get you started developing with Vue 3 in Vite.
+硅谷甄选前端学习项目，跟着老师视频手敲出来的，有些地方跟老师不一样，仅供参考。
 
-## Recommended IDE Setup
+## 项目启动
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+使用 Nodejs v18.16.1 版本。
 
-## Type Support for `.vue` Imports in TS
+1. 安装 pnpm
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+```
+npm install pnpm -g
+```
 
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
+2. 安装依赖包：
 
 ```sh
 pnpm install
 ```
 
-### Compile and Hot-Reload for Development
+3. 本地启动项目：
 
 ```sh
 pnpm dev
 ```
 
-### Type-Check, Compile and Minify for Production
+## 与后端项目配合使用
 
-```sh
-pnpm build
+[后端这个项目](https://github.com/WangJian3306/vue3_admin_backend.git)是我实现的后端API项目，在本地运行后，可以与此项目配合使用（妈妈再也不怕老师的接口断网啦）。
+
+在`.env.development`中修改`VITE_SERVE`为本地运行后端项目的地址:
+```
+VITE_APP_BASE_API = '/api'
+# VITE_SERVE = 'http://sph-api.atguigu.cn' # 老师提供的API地址，当不能用时，可以试试下面这个。
+VITE_SERVE = 'http://127.0.0.1:10086'       # 本地运行的后端API地址
 ```
 
-### Lint with [ESLint](https://eslint.org/)
+登录账号：admin
 
-```sh
-pnpm lint
-```
+密码：111111
+
+（完）
