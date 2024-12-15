@@ -34,6 +34,7 @@
         :on-preview="handlePictureCardPreview"
         :on-remove="handleRemove"
         :before-upload="handleUpload"
+        :headers="headers"
       >
         <el-icon><Plus /></el-icon>
       </el-upload>
@@ -177,6 +178,13 @@ let SpuParams = ref<SpuData>({
   spuSaleAttrList: [],
 })
 
+// el-upload 上传 http 请求头，携带 Token 
+// 引入用户相关的仓库
+import useUserStore from '@/store/modules/user'
+// 获取用户相关的小仓库：获取仓库内部token，登录成功以后携带给服务器
+const userStore = useUserStore()
+const headers = {Token: userStore.token}
+
 // 将来手机还未选择的销售属性的ID与属性值的名字
 const saleAttrIdAndValueName = ref<string>('')
 
@@ -273,7 +281,7 @@ const addSaleAttr = () => {
   const [baseSaleAttrId, saleAttrName] = saleAttrIdAndValueName.value.split(':')
   // 准备一个新的销售属性对象：将来带给服务器即可
   let newSaleAtrr: SaleAttr = {
-    baseSaleAttrId,
+    baseSaleAttrId: Number(baseSaleAttrId),
     saleAttrName,
     spuSaleAttrValueList: [],
   }
@@ -363,7 +371,7 @@ const save = async () => {
 const initAddSpu = async (c3Id: number | string) => {
   // 清空数据
   Object.assign(SpuParams.value, {
-    id: '',
+    id: 0,
     category3Id: '',
     spuName: '',
     description: '',

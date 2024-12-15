@@ -71,7 +71,7 @@ export type SpuSaleAttrValueList = SaleAttrValue[]
 export interface SaleAttr {
   id?: number
   spuId?: number
-  baseSaleAttrId: number | string
+  baseSaleAttrId: number
   saleAttrName: string
   spuSaleAttrValueList: SpuSaleAttrValueList
   flag?: boolean
