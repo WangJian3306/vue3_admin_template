@@ -12,7 +12,7 @@ enum API {
   // 获取商品详情
   SKUINFO_URL = '/admin/product/getSkuInfo/',
   // 删除已有的商品
-  DELETESKU_URL = '/admin/product/deleteSKU/',
+  DELETESKU_URL = '/admin/product/deleteSku/',
 }
 
 // 获取商品SKU的接口

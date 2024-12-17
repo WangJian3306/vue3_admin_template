@@ -178,12 +178,12 @@ let SpuParams = ref<SpuData>({
   spuSaleAttrList: [],
 })
 
-// el-upload 上传 http 请求头，携带 Token 
+// el-upload 上传 http 请求头，携带 Token
 // 引入用户相关的仓库
 import useUserStore from '@/store/modules/user'
 // 获取用户相关的小仓库：获取仓库内部token，登录成功以后携带给服务器
 const userStore = useUserStore()
-const headers = {Token: userStore.token}
+const headers = { Token: userStore.token }
 
 // 将来手机还未选择的销售属性的ID与属性值的名字
 const saleAttrIdAndValueName = ref<string>('')
